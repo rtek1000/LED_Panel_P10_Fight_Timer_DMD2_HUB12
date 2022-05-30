@@ -1,5 +1,5 @@
 Note: Work in progress, sorry.
-- There is a bug that makes the screen blank related to the input_ctrl_left command (serial command: 2)
+- There is a bug that leaves the screen blank related to the show_clock() subroutine
 
 # Fight_Timer_DMD_HUB12
 
