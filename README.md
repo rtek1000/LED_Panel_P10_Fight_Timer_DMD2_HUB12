@@ -18,7 +18,7 @@ Note: Work in progress, sorry.
 ## Hardware:
 - Arduino Pro Mini 5V 16MHz
 - P10 Panel 32x16 (Red led)
-- Power bank Pineng PN-951 (Good current capacity (up to 2 Amps), low standby consumption, charge indicator via LED, slim body)
+- Power bank Pineng PN-951 (Good current capacity (up to 2 Amps), low standby consumption, charge indicator via LED, slim body, 10000mA 3.7V battery, CI IP5306)
 - ESP8266 (Firmware esp-link v3.2.47-g9c6530d)
 - ENC28J60 (Not implemented yet)
 
