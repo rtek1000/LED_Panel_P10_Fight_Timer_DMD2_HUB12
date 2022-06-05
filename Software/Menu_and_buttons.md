@@ -40,7 +40,7 @@ Menu tree for counting (Ft/In):
 - "N. Ft": Select notification types for Fight.
 - - "Off": Turn off all notifications
 - - "Beep": Just Beep
-- - "Music": Just Music
+- - "Music": Just Music (Continuous 'random' play)
 - - "Voice": Just Voice (i.e.: "Round 1"; "Interval count")
 - - "B+M": Beep and Music
 - - "B+V": Beep and Voice
