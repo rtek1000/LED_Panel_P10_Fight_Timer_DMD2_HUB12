@@ -1,7 +1,4 @@
 Note: Work in progress, sorry.
-- There is an incompatibility between the DMD2 library and the I2C port access,
-  Solution described here:
-https://github.com/freetronics/DMD2/issues/67
 
 # Fight_Timer_DMD_HUB12
 
