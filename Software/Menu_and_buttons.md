@@ -37,25 +37,25 @@ Menu tree for counting (Ft/In):
 - "Set Intv?": Sets the count initialization value for Interval (In) counts.
 - - "mm:ss" minutes (Value range: 0-99); seconds (Value range: 0-59)
 
-- "Notif": Select notification types.
-- - "Fight": Settings for Fight
-- - - "Off": Turn off all notifications
-- - - "Beep": Just Beep
-- - - "Music": Just Music
-- - - "Voice": Just Voice (i.e.: "Round 1"; "Interval count")
-- - - "B+M": Beep and Music
-- - - "B+V": Beep and Voice
-- - - "M+V": Music and Voice
-- - - "B+M+V": Beep, Music and Voice
-- - "Intv": Settings for Interval
-- - - "Off": Turn off all notifications
-- - - "Beep": Just Beep
-- - - "Music": Just Music
-- - - "Voice": Just Voice (i.e.: "Round 1"; "Interval count")
-- - - "B+M": Beep and Music
-- - - "B+V": Beep and Voice
-- - - "M+V": Music and Voice
-- - - "B+M+V": Beep, Music and Voice
+- "N. Ft": Select notification types for Fight.
+- - "Off": Turn off all notifications
+- - "Beep": Just Beep
+- - "Music": Just Music
+- - "Voice": Just Voice (i.e.: "Round 1"; "Interval count")
+- - "B+M": Beep and Music
+- - "B+V": Beep and Voice
+- - "M+V": Music and Voice
+- - "B+M+V": Beep, Music and Voice
+
+- "N. In": Select notification types for Interval.
+- - "Off": Turn off all notifications
+- - "Beep": Just Beep
+- - "Music": Just Music
+- - "Voice": Just Voice (i.e.: "Round 1"; "Interval count")
+- - "B+M": Beep and Music
+- - "B+V": Beep and Voice
+- - "M+V": Music and Voice
+- - "B+M+V": Beep, Music and Voice
 
 - "Volum B: nn": Adjust Beep volume (nn: 1-30).
 - - Button "Left": Next menu
