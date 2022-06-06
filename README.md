@@ -20,6 +20,11 @@ Note: Work in progress, sorry.
 - Power bank Pineng PN-951 (Good current capacity (up to 2 Amps), low standby consumption, charge indicator via LED, slim body, 10000mA 3.7V battery, CI IP5306)
 - ESP8266 (Firmware esp-link v3.2.47-g9c6530d)
 - ENC28J60 (Not implemented yet)
+- DFPlayer Mini (It may be interesting to normalize the audio before playing)
+- - See this app: replaygain
+- - sudo apt-get install replaygain
+- - - replaygain -r -1 *.mp3
+- - https://en.wikipedia.org/wiki/ReplayGain
 
 ## Licence:
 
