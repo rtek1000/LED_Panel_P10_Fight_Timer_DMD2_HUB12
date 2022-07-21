@@ -1,27 +1,27 @@
 
-void text_scroll(String MESSAGE) {
-  //String MESSAGE = "Menu de ajustes";
-  //String MESSAGE = "Settings menu";
-  MESSAGE = "     " + MESSAGE;
-  MESSAGE = MESSAGE + "     ";
-  byte next = MESSAGE.length() + 1;
-
-  dmd.clearScreen();
-
-  dmd.selectFont(SystemFont5x7);
-
-  while (next--) {
-    //Serial.print(MESSAGE[MESSAGE.length() - next]);
-    //box.print(MESSAGE[MESSAGE.length() - next]);
-    dmd.drawString(2, 4, MESSAGE.substring(MESSAGE.length() - next));
-    delayWdt(200);
-    //next++;
-  }
-
-  delayWdt(500);
-  dmd.clearScreen();
-  dmd.selectFont(SystemFont5x7);
-}
+//void text_scroll(String MESSAGE) {
+//  //String MESSAGE = "Menu de ajustes";
+//  //String MESSAGE = "Settings menu";
+//  MESSAGE = "     " + MESSAGE;
+//  MESSAGE = MESSAGE + "     ";
+//  byte next = MESSAGE.length() + 1;
+//
+//  dmd.clearScreen();
+//
+//  dmd.selectFont(SystemFont5x7);
+//
+//  while (next--) {
+//    //Serial.print(MESSAGE[MESSAGE.length() - next]);
+//    //box.print(MESSAGE[MESSAGE.length() - next]);
+//    dmd.drawString(2, 4, MESSAGE.substring(MESSAGE.length() - next));
+//    delayWdt(200);
+//    //next++;
+//  }
+//
+//  delayWdt(500);
+//  dmd.clearScreen();
+//  dmd.selectFont(SystemFont5x7);
+//}
 
 void show_round_and_time(void) {
   show_round();
@@ -33,7 +33,7 @@ void show_round(void) {
 }
 void show_time_round(void) {
   if (time_sel == func_normal) {
-    dmd.drawString(2, 0, "Ft"); // "N"
+    dmd.drawString(2, 0, "Rd"); // "N"
   } else if (time_sel == func_interval) {
     dmd.drawString(2, 0, "In");
   }
@@ -55,14 +55,14 @@ void show_recal_round_interval(void) {
                  + String(interval_recall_sec1));
 }
 
-void decrement_time(void) {
+void decrement_time_and_show(void) {
   if (((L10 != 0) | (L1 != 0) | (R10 != 0) | (R1 != 0))
       & (pause_state == false)) {
-    if ((bell_ding_mode_val == true) & (state == func_interval)) {
-      if (digitalRead(dfPlayerStatus)) { // dfPlayer off?
-        musicRandStart();
-      }
-    }
+    //    if ((bell_ding_mode_val == true) & (state == func_interval)) {
+    //      if (digitalRead(dfPlayerStatus)) { // dfPlayer off?
+    //        musicRandStart();
+    //      }
+    //    }
 
     if (R1 > 0) {
       R1--;
@@ -243,7 +243,7 @@ void blink_show(void) {
                | (state == func_menu_set_round_recall_normal_min1)
                | (state == func_menu_set_round_recall_normal_sec10)
                | (state == func_menu_set_round_recall_normal_sec1)) {
-      dmd.drawString(2, line1, "Fight");
+      dmd.drawString(2, line1, "Round");
 
       show_recal_round_normal();
     } else if ((state == func_menu_set_round_recall_interval_min10)
@@ -278,74 +278,131 @@ void blink_show(void) {
 }
 
 void show_bell_state(void) {
-  dmd.drawString(2, line1, "N. Ft");
+  dmd.drawString(2, line1, "Nt Rd"); // Notifications for Round
 
   switch (bell_ding_mode_val) {
-    case 0:
-      dmd.drawString(2, line2, "Beep ");
-      break;
-    case 1:
-      dmd.drawString(2, line2, "Music");
-      break;
-    case 2:
-      dmd.drawString(2, line2, "Voice");
-      break;
-    case 3:
-      dmd.drawString(2, line2, "B+M  ");
-      break;
-    case 4:
-      dmd.drawString(2, line2, "B+V  ");
-      break;
-    case 5:
-      dmd.drawString(2, line2, "M+V  ");
-      break;
-    case 6:
-      dmd.drawString(2, line2, "B+M+V");
-      break;
-    case 7:
+    case audio_off:
       dmd.drawString(2, line2, "Off  ");
       break;
+    case audio_beep:
+      dmd.drawString(2, line2, "Beep ");
+      break;
+    case audio_voice:
+      dmd.drawString(2, line2, "Voice");
+      break;
+    case audio_beep_voice:
+      dmd.drawString(2, line2, "B+V  ");
+      break;
+    case audio_music:
+      dmd.drawString(2, line2, "Music");
+      break;
+    case audio_beep_music:
+      dmd.drawString(2, line2, "B+M  ");
+      break;
+    case audio_music_voice:
+      dmd.drawString(2, line2, "M+V  ");
+      break;
+    case audio_beep_music_voice:
+      dmd.drawString(2, line2, "B+M+V");
     default:
       // comando(s)
       break;
+
+      //  switch (bell_ding_mode_val) {
+      //    case 0:
+      //      dmd.drawString(2, line2, "Beep ");
+      //      break;
+      //    case 1:
+      //      dmd.drawString(2, line2, "Music");
+      //      break;
+      //    case 2:
+      //      dmd.drawString(2, line2, "Voice");
+      //      break;
+      //    case 3:
+      //      dmd.drawString(2, line2, "B+M  ");
+      //      break;
+      //    case 4:
+      //      dmd.drawString(2, line2, "B+V  ");
+      //      break;
+      //    case 5:
+      //      dmd.drawString(2, line2, "M+V  ");
+      //      break;
+      //    case 6:
+      //      dmd.drawString(2, line2, "B+M+V");
+      //      break;
+      //    case 7:
+      //      dmd.drawString(2, line2, "Off  ");
+      //      break;
+      //    default:
+      //      // comando(s)
+      //      break;
   }
 }
 
 void show_bell_state_intv(void) {
-  dmd.drawString(2, line1, "N. In");
-
+  dmd.drawString(2, line1, "Nt In"); // Notifications for Interval
+  
   switch (bell_ding_mode_val_intv) {
-    case 0:
+    case audio_off:
+      dmd.drawString(2, line2, "Off  ");
+      break;
+    case audio_beep:
       dmd.drawString(2, line2, "Beep ");
       break;
-    case 1:
-      dmd.drawString(2, line2, "Music");
-      break;
-    case 2:
+    case audio_voice:
       dmd.drawString(2, line2, "Voice");
       break;
-    case 3:
-      dmd.drawString(2, line2, "B+M  ");
-      break;
-    case 4:
+    case audio_beep_voice:
       dmd.drawString(2, line2, "B+V  ");
       break;
-    case 5:
+    case audio_music:
+      dmd.drawString(2, line2, "Music");
+      break;
+    case audio_beep_music:
+      dmd.drawString(2, line2, "B+M  ");
+      break;
+    case audio_music_voice:
       dmd.drawString(2, line2, "M+V  ");
       break;
-    case 6:
+    case audio_beep_music_voice:
       dmd.drawString(2, line2, "B+M+V");
-      break;
-    case 7:
-      dmd.drawString(2, line2, "Off  ");
       break;
     default:
       // comando(s)
       break;
+
+      //  switch (bell_ding_mode_val_intv) {
+      //    case 0:
+      //      dmd.drawString(2, line2, "Beep ");
+      //      break;
+      //    case 1:
+      //      dmd.drawString(2, line2, "Music");
+      //      break;
+      //    case 2:
+      //      dmd.drawString(2, line2, "Voice");
+      //      break;
+      //    case 3:
+      //      dmd.drawString(2, line2, "B+M  ");
+      //      break;
+      //    case 4:
+      //      dmd.drawString(2, line2, "B+V  ");
+      //      break;
+      //    case 5:
+      //      dmd.drawString(2, line2, "M+V  ");
+      //      break;
+      //    case 6:
+      //      dmd.drawString(2, line2, "B+M+V");
+      //      break;
+      //    case 7:
+      //      dmd.drawString(2, line2, "Off  ");
+      //      break;
+      //    default:
+      //      // comando(s)
+      //      break;
   }
 }
 
-void show(void) {
+void show_date_time(void) {
   if (state == func_clock) {
     if (clock_show_cnt < 19) {
       clock_show_cnt++;

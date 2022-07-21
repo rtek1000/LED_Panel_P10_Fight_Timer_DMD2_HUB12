@@ -1,0 +1,825 @@
+;**************************************************************************
+;    RX_GEN_HT6P20B_V5P1.ASM (http://picsource.com.br/archives/1120)
+;    Licence: CC BY-SA???
+;
+;    Comment language: Pt-Br 
+;
+;    ---> COMPILAR COM MPLAB v8.92 (MPASM compiler)
+;
+;    
+;    RECEPTOR RF PARA CONTROLE REMOTOS (CHAVEIRINHOS) COM CI HT6P20B
+; 
+;    PARA DECODIFICAR UTILIZA UM PIC 12F629 (OPCIONALMENTE UM 12F675, DES-
+;    COMENTANDO/COMENTANDO  AS LINHAS CITADAS NO TEXTO).
+;
+;    CLAUDIO LÁRIOS        INICIO: 27-07-2012  TERMINO:28-06-2012
+;    REVISADO EM 15/09/2012 
+;    MODIFICAÇÕES DA VERSÃO 5:   
+;    ALÉM DE MANTÉM LEDS ACESOS SE BOTÃO FICAR PRESSIONADO (NÃO PISCA)
+;    FOI ACRESCENTADO MAIS UMA SAÍDA NO PINO 3 (LED3) QUE PODE SER ACIONADA
+;    DE 2 MANEIRAS:
+;    1) MODO OR_LED: ACENDE JUNTOS 
+;    (BOTÃO ESQ= LED1 ;BOTÃO DIR=LED2 ; 2 BOTÕES=LED3 + LED2 + LED1 ACESOS)
+;    2) MODO XOR_LED:ACENDE UM LED POR VEZ
+;    (BOTÃO ESQ= LED1 ;BOTÃO DIR=LED2 ; 2 BOTÕES=LED3-APAGA LED2 E 3)
+;    ANTES DE COMPILAR, ESCOLHAS SUAS DEFINIÇÕES ABAIXO (DEFINIÇÕES DE USUARIO)
+;    O MODO DE APRENDIZADO FOI REFORMULADO: APENAS APRENDA UM BOTÃO, QUE OS OUTROS
+;    JÁ SERÃO ACEITOS.
+;    TX  CUJO CÓDIGO DE ENDEREÇO SEJA 0X000000  NÃO É MAIS 'APRENDIDO'.
+;    REVISADO 04-01-2013
+;    (ELIMINADO BUG DE FALSA RECEPÇÃO COM CÓDIGO 'FFFFFF'C/ INTERFERÊNCIAS
+;    ELIMINADO BUG DE MAU FUNCIONAMENTO COM CÓDIGOS DE CONTROLES SEQUENCIAIS)
+;
+;    Modificado em: 16/07/2022
+;    Por: RTEK1000
+;    Modificações: Pinos e tempo de acionamento das saídas
+;**************************************************************************
+; Modificado por Rtek100 em 05/02/2016:
+; - selecionado PIC12F675
+; - alterado pinout
+; >-PINO 2- SAIDA DO LED1
+; >-PINO 3- SAIDA DO LED2
+; >-PINO 4- IN RF
+; >-PINO 5- SAIDA DO LED3
+; >-PINO 6- SAIDA LED 'LEARN' (aceso em LOW - 0V)
+; >-PINO 7- IN LEARN BOTTON
+; - alterado acionamento do led learn ligar anodo ao Vdd e catodo ao PIC
+;
+;**************************************************************************
+;
+;   GRAVAR CONTROLE:  APERTE QUALQUER BOTÃO DO CONTROLE E MANTENHA APERTADO.
+;   APERTE TAMBÉM O BOTÃO 'LEARN' NA PLACA (PINO 4 DO PIC 12F629  A MASSA)E 
+;   SOLTE-O EM MENOS DE 1 SEGUNDOS.  O LED 'LEARN'(PINO 2)   PISCARÁ 1
+;   VEZ, PARA INDICAR 'CODE APRENDIDO'. OS OUTROS BOTÕES JÁ SERÃO APRENDIDOS.
+;   APAGAR TODOS OS CONTROLES DA MEMÓRIA:  APERTAR BOTÃO 'LEARN' NA PLACA E 
+;   MANTENHA PRESSIONADO POR MAIS DE 10 SEGUNDOS.    O LED 'LEARN' (PINO 2) PISCARÁ
+;   3 VEZES , INDICANDO O PLENO APAGAMENTO DE TODOS OS SENSORES DA MEMÓRIA.
+;   APÓS ISTO, CADA CONTROLE DEVERÁ SER 'REAPRENDIDO' NOVAMENTE PARA OPERAR.
+;*************************************************************************** 
+;===================================================================================================================
+;DEFINIÇÕES DO USUARIO (DESCOMENTE A OPÇÃO DESEJADA E COMENTE AS OUTRAS)
+
+;#DEFINE PIC_629     ;ESCOLHE MICROCONTROLADOR PIC12F629
+#DEFINE PIC_675    ;ESCOLHE MICROCONTROLADOR PIC12F675
+
+#DEFINE XOR_LED    ;ACENDE APENAS UM LED POR VEZ (BOTÃO ESQ= LED1 ;BOTÃO DIR=LED2 ; 2 BOTÕES=LED3-APAGA LED2 E 3)
+;#DEFINE OR_LED     ;ACENDE JUNTOS (BOTÃO ESQ= LED1 ;BOTÃO DIR=LED2 ; 2 BOTÕES=LED3 + LED2 + LED1 ACESOS)
+
+#DEFINE PULSE_LED    ;PULSO
+;#DEFINE RETENT_LED    ;RETENÇÃO
+
+;===================================================================================================================
+    IFDEF PIC_675 
+	LIST P=12f675 , R=DEC
+ 	INCLUDE "P12F675.INC"
+    ENDIF
+    IFDEF PIC_629
+ 	LIST P=12f629 , R=DEC
+ 	INCLUDE "P12F629.INC"
+    ENDIF
+;--------------------------
+	ERRORLEVEL      -302   
+	__CONFIG		_CP_OFF & _CPD_OFF & _PWRTE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _BODEN_ON & _MCLRE_OFF
+
+#DEFINE		BANK0	BCF	STATUS,RP0 	 ;SETA BANK0 DE MEMORIA
+#DEFINE		BANK1	BSF	STATUS,RP0	 ;SETA BANK1
+#DEFINE		FLAG	FLAGS,0          ;FLAG DE SITUAÇÃO
+#DEFINE		FLAG1	FLAGS,1     	 ;FLAG DE NOVA LEITURA
+#DEFINE		FLAGGR	FLAGS,2     	 ;FLAG DE 'LEARN' APRENDER
+
+#DEFINE LED1   		GPIO,5  ;PINO 2  SAIDA DO LED1
+#DEFINE LED2   		GPIO,4	;PINO 3  SAIDA DO LED2
+#DEFINE SIN 		GPIO,3  ;PINO 4  IN RF
+#DEFINE LED3      	GPIO,2	;PINO 5  SAIDA DO LED3
+#DEFINE LED0       	GPIO,1	;PINO 6  SAIDA LED0 'LEARN' (aceso em LOW - 0V)
+#DEFINE LRN       	GPIO,0	;PINO 7  IN LEARN BOTTON
+
+     CBLOCK  0X20
+	RES3,RES2,RES1,RES0
+	AUX    
+	C3,C2,C1,C0
+	WS	   
+	TEMP
+	BITCOUNTER
+	FLAGS
+	TL0,TL1,TL2
+	Z4,Z3,Z2,Z1    
+	Y1,Y2
+	LcdDelayCounter,LcdDelayCounter1
+	tmpLcdRegister,tmpLcdRegister1
+	SITUAÇÃO
+	temp
+	SDATA
+	AUX2
+	LC,HC
+	CONT
+	RES3A,RES2A,RES1A,RES0A
+	X
+	R0,R1,R2
+	TMP1,TMP2,TMP3
+	ADDRESS
+	TMP,TMP_SALVO
+     ENDC
+
+WRCFG	EQU	B'00000000'	; PORTB: EEPROM WRITE TRI-STATE VALUE
+YTRISA	EQU	B'001001'	; PORTA: TRI-STATE VALUE  
+TMAX    EQU  .50       ;TEMPO MAXIMO DO SINAL LOW
+QBYTE   EQU  .28        ;QUANTIDADE DE BYTES A SER RECEBIDO (22 ADRESS+ 2 DADO+ 4 ANTICODE)
+TGR     EQU  .255       ;TEMPO DE BOTÃO APERTADO PARA APAGAR GRAVAÇAO
+
+T_DESL_LED EQU .20     ;TEMPO MÁXIMO QUE LEDS FICAM ACESOS APÓS CESSAR TRANSMISSÃO
+
+    ORG 0X00
+    GOTO START
+    ORG 0X04
+    RETFIE
+
+START:
+	MOVLW   0X07
+	MOVWF	CMCON			;DESLIGA COMPARADORES
+	MOVLW   B'000000'
+	MOVWF	GPIO			; RESET PORT
+	
+	BANK1
+ 	MOVLW	YTRISA			; SETUP PORTA
+	MOVWF	TRISIO
+	
+	MOVLW   B'00000000'
+	MOVWF	OPTION_REG		;Pull-up enabled
+	
+	MOVLW   B'00000001'
+	MOVWF	WPU			;GPIO0 Pull-up enabled
+	
+    ifdef PIC_675
+ 	BANK1
+ 	MOVLW .0
+ 	MOVWF ANSEL  ;LIBERA PORTAS DO AD (SOMENTE 12f675)
+
+    BANK0
+    endif
+
+	 CLRF   FLAGS   ;APAGA REGISTRADOR DE FLAGS
+     MOVLW  TGR
+     MOVWF  Z2
+     CLRF  Z1		;RECARGA DO TEMPO DE APAGAMENTO
+     CLRF  Z3		;RECARGA DO TEMPO DE APAGAMENTO
+     MOVLW  .10
+     MOVWF  Z4		;RECARGA DO TEMPO DE APAGAMENTO
+INICIO:
+    
+     CLRF  RES3
+     CLRF  RES2
+     CLRF  RES1
+	 CLRF  RES0
+     MOVLW  QBYTE  ;PREPARA PARA A RECEPÇÃO COM NUMERO DE BITS A RECEBER
+	 MOVWF  BITCOUNTER
+     
+L0
+     BCF   FLAG   ;LIMPA FLAG E REGISTRADORES DE RECEPÇÃO
+     CLRF  HC
+     CLRF  LC
+L1
+;---------------------------------
+
+     BTFSS  LRN	    ;TESTA BOTÃO 'LEARN' APERTADO
+	BSF    FLAGGR  ;ATIVA MODO APRENDER
+     
+     BTFSC  FLAGGR	    ;TESTA MODO APRENDER
+	GOTO   TAPAGAMENTO  ;APERTADO, COMEÇA A CONTAR TEMPO MAX. DE APAGAMENTO
+     
+;     BTFSS  LRN	    ;TESTA BOTÃO 'LEARN' APERTADO
+;	GOTO RUN0
+;     BTFSS  LED0	    ;TESTA LED0
+;	BCF LED0
+     
+;RUN0
+     MOVLW  TGR
+     MOVWF  Z2		;RECARGA DO TEMPO DE APAGAMENTO
+     CLRF  Z1		;RECARGA DO TEMPO DE APAGAMENTO
+
+L1H2     
+    GOTO    SS5
+    
+L1H    
+;    GOTO    SS5
+;    BTFSS  FLAGGR	    ;TESTA MODO APRENDER
+;	GOTO    BLINK_OFF
+     
+    DECFSZ Z3,F
+	GOTO   L1H2 
+    DECFSZ Z4,F
+	GOTO   L1H2 
+     
+    CALL    TOGGLE_LED0
+    CLRF  Z3		;RECARGA DO TEMPO DE APAGAMENTO
+    MOVLW  .10
+    MOVWF  Z4		;RECARGA DO TEMPO DE APAGAMENTO
+    GOTO   L1H2
+
+TAPAGAMENTO       ;APAGAR TODOS OS CONTROLES DA MEMÓRIA
+     BTFSS  LRN	    ;TESTA BOTÃO 'LEARN' APERTADO
+	BSF    LED0        ;ACENDE LED0
+	
+     DECFSZ Z1,F
+	GOTO   L1H 
+
+     DECFSZ Z2,F
+	GOTO   L1H
+	
+     BCF    FLAGGR  ;DESATIVA MODO APRENDER
+     
+     BTFSC  LRN   ;TESTA BOTÃO 'LEARN' APERTADO
+	GOTO   L1H
+	
+     CALL   APAGAEEPROM ;ATINGIU TEMPO MAXIMO: APAGAR MEMÓRIA
+     
+     BCF    LED0        ;APAGA LED0
+     
+     BTFSS  LRN	    ;TESTA BOTÃO 'LEARN' APERTADO
+	GOTO $-1
+	
+     MOVLW  .50
+     CALL   DELAYM
+     
+;     CALL   LED0BLINK0
+;     CALL   LED0BLINK0
+;     CALL   LED0BLINK0
+    	 
+     BTFSS  LRN       ;AGUARDA SOLTAR BOTÃO 'LEARN'
+     GOTO   $-1
+     GOTO INICIO
+
+;===================ROTINA DE RECEPÇÃO==========================
+SS5:
+;A  
+	 
+     BTFSS FLAG        ;TESTA FLAG DE HUM/ZERO RECEBIDO
+	 GOTO  L2      ;FLAG=0
+;--------------------------------
+;B
+     BTFSS SIN      ;SIN ? TESTA SINAL DE ENTRADA DO RECEPTOR DE RF
+	 GOTO  M0       ; SIN=0
+;----------------------------------
+L2
+;C
+	 BTFSS SIN      ;SIN ?
+     GOTO  LA1      ;SIN=0
+;-------------------------------------
+;E
+	 BSF   FLAG     ;SIN=1
+     INCF  HC,F
+     BTFSC STATUS,Z
+     DECF  HC,F
+     GOTO  LA2	   ;VAI CONTAR TEMPO DE 50 MICRO SEGUNDOS
+;---------------------------------------------------------
+LA1
+;D
+    INCF  LC,F     ;INCREMENTA REGISTRADOR DE LOW SIGNAL NA ENTRADA RF
+    BTFSC STATUS,Z
+    DECF  LC,F
+LA2
+    
+     DECFSZ Y1,F    ;CONTADOR DE TEMPO DE DESLIGAMENTO DE SAIDAS
+     GOTO   J0
+    DECFSZ Y2,F    ;CONTADOR DE TEMPO DE DESLIGAMENTO DE SAIDAS
+     GOTO   J0
+     
+    ifdef PULSE_LED
+	BCF   LED1    ;APAGA LEDS
+	BCF   LED2
+	BCF   LED3
+    endif
+
+     INCF  Y1,F
+     INCF  Y2,F
+J0
+
+	MOVLW  .9  ;.9 = 50 MICROSEG    (ACERTA TEMPO ENTRE LEITURAS DA ENTRADA DE RF)
+    MOVWF  CONT
+    DECFSZ CONT,F
+    GOTO $-1
+    GOTO L1
+
+M0
+;----------------------------------
+;F
+    MOVFW  LC		    ;TESTA SE NÃO PASSOU DO LIMITE MAXIMO DE TEMPO EM LOW NA ENTRADA DE RF
+    SUBLW  TMAX
+    BTFSS  STATUS,C
+    GOTO   INICIO       ;C=0 (-)  -  LC>TMAX (REJEITAR DADO - PAUSA INICIAL)
+;F'
+ 
+;-----------------------------------
+    
+;G
+    MOVFW  HC			;OBTEM O VALOR DE 'CARRY'(HUM OU ZERO)
+    SUBWF  LC,W
+    
+    RRF    RES3,F       ;DESLOCA  O BIT NOS REGISTRADORES DE RESULTADO
+    RRF    RES2,F
+    RRF    RES1,F
+    RRF    RES0,F
+;-------------------------------------
+;H
+	
+    DECFSZ  BITCOUNTER,F  ;DECREMENTA O CONTADOR DE BITS A SER RECEBIDO
+    GOTO   L0             ;LE PROXIMO BIT
+    
+    MOVLW  .4             ;DESPREZA OS BITS DE 'ANTICODE' 1010
+    MOVWF  BITCOUNTER
+ACERTA
+    BCF    STATUS,C
+    RRF    RES3,F
+    RRF    RES2,F
+    RRF    RES1,F
+    RRF    RES0,F        ;RESULTADO FICA SOMENTE EM RES2 A RES0,DESPREZA RES3
+	DECFSZ BITCOUNTER,F
+    GOTO   ACERTA
+	
+
+
+    BTFSC  FLAG1        ;TESTA SE É A PRIMEIRA OU A SEGUNDA RECEPÇÃO
+	GOTO   PULA1
+    MOVFW  RES2         ;SALVA A PRIMEIRA LEITURA PARA COMPARAÇÃO COM UMA SEGUNDA
+    MOVWF  RES2A
+    MOVFW  RES1
+    MOVWF  RES1A    
+    MOVFW  RES0
+    MOVWF  RES0A	
+    BSF   FLAG1			;SETA FLAG DE PRIMEIRA RECEPÇÃO
+
+    GOTO  INICIO
+PULA1
+	BCF FLAG1          ;SEGUNDA RECEPÇÃO, COMPARA COM A PRIMEIRA
+	MOVFW  RES2
+    XORWF  RES2A,W
+    BTFSS  STATUS,Z
+    GOTO   RESETAC
+    MOVFW  RES1
+    XORWF  RES1A,W
+    BTFSS  STATUS,Z
+    GOTO   RESETAC
+	MOVFW  RES0
+    XORWF  RES0A,W
+    BTFSS  STATUS,Z
+    GOTO   RESETAC	  ;ERRO DE RECEPÇÁO
+
+    MOVFW  RES2
+    MOVWF  RES3       ;SALVA RES2 EM RES3
+    MOVLW  B'00111111'
+    ANDWF  RES2,F     ;APAGA BOTÕES
+
+	MOVFW  RES2      ;ELIMINA CODIGO 0X000000
+    XORLW  .0
+    BTFSC  STATUS,Z
+    GOTO   RESETAC	  ;ERRO DE RECEPÇÁO
+	MOVFW  RES1
+    XORLW  .0
+    BTFSC  STATUS,Z
+    GOTO   RESETAC	  ;ERRO DE RECEPÇÁO
+	MOVFW  RES0
+ 	XORLW  .0
+    BTFSC  STATUS,Z
+    GOTO   RESETAC	  ;ERRO DE RECEPÇÁO
+
+    GOTO   AÇÃO       ;OK - BOA RECEPÇÃO
+
+RESETAC
+	CLRF   RES3A     ; APAGA RESULTADOS DE COMPARAÇÃO
+    CLRF   RES2A
+    CLRF   RES1A
+	CLRF   RES0A
+    GOTO INICIO
+
+;-------------------------------------
+AÇÃO
+;===========================================================
+;ROTINA PARA ELIMINAR RECEPÇÃO 'FFFFFF' (MEMÓRIA VIRGEM)
+    MOVFW  RES2
+    XORLW  0XFF
+    BTFSS  STATUS,Z
+    GOTO   R_CONT
+ 	MOVFW  RES1
+    XORLW  0XFF
+    BTFSS  STATUS,Z
+    GOTO   R_CONT
+ 	MOVFW  RES0
+    XORLW  0XFF
+    BTFSS  STATUS,Z
+    GOTO   R_CONT
+    GOTO   RESETAC   ;RECEBEU 'FFFFFF' = ERRO
+
+R_CONT
+;========================================================
+
+;I
+;    BTFSS  LRN     ;BOTÃO ESTÁ APERTADO?
+;    BSF    FLAGGR
+    CALL   PPT
+    MOVWF  TMP_SALVO  ;SALVA TMP
+    SUBLW  .0
+    BTFSC  STATUS,Z  ; É '0'?
+    GOTO   APRENDER    ;NENHUM CONTROLE FOI  GRAVADO
+MADDRESS
+    MOVFW  TMP_SALVO
+	MOVWF  ADDRESS
+    CALL   EEREAD
+    XORWF  RES2,W      ;COMPARA COM RES2
+    BTFSS  STATUS,Z
+    GOTO   PROXIMO
+    DECF   ADDRESS,F
+    MOVFW  ADDRESS
+    CALL   EEREAD
+    XORWF  RES1,W      ;COMPARA COM RES1
+    BTFSS  STATUS,Z
+    GOTO   PROXIMO
+	DECF   ADDRESS,F
+	MOVFW  ADDRESS
+    CALL   EEREAD
+    XORWF  RES0,W      ;COMPARA COM RES0
+    BTFSC  STATUS,Z
+    GOTO ACIONAR	   ;ENCONTRADO CONTROLE NA MEMÓRIA
+PROXIMO					;VAI PARA O PROXIMO ENDEREÇO DE MEMÓRIA PROCURAR....
+    
+    
+    MOVLW   .3
+    SUBWF   TMP_SALVO,F	  ;ACERTA  DE 3 EM 3 A POSIÇÃO DE BUSCA NA MEMÓRIA
+
+	BTFSS  STATUS,C  
+	GOTO   APRENDER 
+
+    BTFSS   STATUS,Z
+    GOTO   MADDRESS   ;VOLTA A BUSCA
+   
+    
+APRENDER
+    BTFSS  FLAGGR    ;TESTA SE BOTÃO 'LEARN' ESTÁ PRESSIONADO
+    GOTO   INICIO    ;NÃO ESTÁ.
+    CALL   PPT       ;ESTÁ, PEGA PONTEIRO
+    MOVWF  ADDRESS   ;PEGA O ENDEREÇO APONTADO
+	SUBLW  0X7E      ;LIMITE MAXIMO DA EEPROM (128-1 /3= 42 BOTÕES OU 24 CONTROLES)
+    BTFSS  STATUS,C
+    CLRF   ADDRESS    ;INICIA SOBREGRAVAÇÃO
+    INCF   ADDRESS,F        ;SOMA 1
+    MOVFW  RES0
+    MOVWF  TMP		 ;COLOCA EM 'TMP'
+    MOVFW  ADDRESS   ;DA O POSIÇÃO DE MEMORIA A SER GRAVADO
+    CALL   EEWRITE   ;ROTINA DE ESCRITA NA EEPROM
+    INCF   ADDRESS,F ;PROXIMA POSIÇÃO DE ESCRITA NA EEPROM
+    MOVFW  RES1
+    MOVWF  TMP
+    MOVFW  ADDRESS 
+    CALL   EEWRITE
+    INCF   ADDRESS,F
+    MOVFW  RES2
+    MOVWF  TMP
+    MOVFW  ADDRESS 
+    CALL   EEWRITE
+    MOVFW  ADDRESS
+    MOVWF  TMP
+    MOVLW  .0
+    CALL   EEWRITE  ;GRAVA NOVO ENDEREÇO DE PONTEIRO
+    BCF    FLAGGR
+    BTFSS  LRN
+    GOTO   $-1
+    MOVLW  .10    ;TEMPO DE ATRASO
+    CALL   DELAYM
+    
+    BSF   LED0       ;LIGA LED0
+    MOVLW  .10    ;TEMPO DE ATRASO
+    CALL   DELAYM
+    BCF   LED0       ;DESLIGA
+    
+ACIONAR 
+;==========================================================================
+
+    MOVFW  RES3  ;RECUPERA OS BOTÕES
+    MOVWF  RES2 
+;==========================================================================
+;   MODO  OR_LED  
+    ifdef OR_LED
+	BTFSS  RES2,7   ; SE OS DOIS BOTÕES ESTIVEREM ACIONADOS
+	GOTO   KJ5
+	BTFSS  RES2,6
+	GOTO   KJ5
+	BSF    LED3
+	BSF    LED2
+	BSF    LED1
+	GOTO   SJ6
+KJ5
+	BCF    LED3
+	BTFSC  RES2,7
+	BSF    LED1
+	BTFSS  RES2,7
+	BCF    LED1
+
+	BTFSC  RES2,6
+	BSF    LED2
+	BTFSS  RES2,6
+	BCF    LED2
+	GOTO   SJ6
+    endif
+;==========================================================================================
+;MODO XOR_LED
+    ifdef  XOR_LED  ;ACIONA UM UNICO LED (BOTÃO ESQ= LED1 ;BOTÃO DIR=LED2 ;2 BOTÕES=LED3)
+	ifdef RETENT_LED
+	    BSF	LED0
+	endif	
+	
+	BTFSS  RES2,7   ; SE OS DOIS BOTÕES ESTIVEREM ACIONADOS
+	    GOTO   SJ5
+	BTFSS  RES2,6
+	    GOTO   SJ5
+	ifdef RETENT_LED
+	    CALL    TOGGLE_LED3
+	endif
+	ifdef PULSE_LED
+;	    BSF    LED1	  ;LIGA O LED1
+;	    BSF    LED2	  ;LIGA O LED2
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+	    BSF    LED3   ;LIGA O LED3
+        MOVLW  .10
+        CALL   DELAYM
+        BCF    LED3        ;APAGA LED0
+        MOVLW  .5
+        CALL   DELAYM
+	endif
+
+	GOTO   SJ6    ; PULA OS OUTROS TESTES
+SJ5
+	BTFSS  RES2,6  ;TESTA QUAIS BOTÕES FORAM ACIONADOS NA TRANSMISSÃO
+	    GOTO   SJ7
+
+	ifdef RETENT_LED
+	    CALL    TOGGLE_LED1
+	endif	
+	ifdef PULSE_LED
+	    BSF    LED1	  ;LIGA O LED1
+        MOVLW  .10
+        CALL   DELAYM
+        BCF    LED1        ;APAGA LED0
+        MOVLW  .5
+        CALL   DELAYM
+;	    BCF    LED2	  ;APAGA O LED2
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+;	    BSF    LED3   ;LIGA O LED3 - INTERRUPÇÃO
+	endif
+	GOTO   SJ6
+SJ7
+	BTFSS  RES2,7  ;TESTA QUAIS BOTÕES FORAM ACIONADOS NA TRANSMISSÃO
+	    GOTO   SJ7
+
+	ifdef RETENT_LED
+	    CALL    TOGGLE_LED2
+	endif	
+	ifdef PULSE_LED
+;	    BCF    LED1	  ;APAGA O LED1
+	    BSF    LED2	  ;LIGA O LED2
+        MOVLW  .10
+        CALL   DELAYM
+        BCF    LED2        ;APAGA LED0
+        MOVLW  .5
+        CALL   DELAYM
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+;	    NOP
+;	    BSF    LED3   ;LIGA O LED3 - INTERRUPÇÃO
+	endif
+
+    endif
+
+
+SJ6
+    ifdef RETENT_LED
+	MOVLW  .10    ;TEMPO DE ATRASO
+	CALL   DELAYM
+	BCF	LED0
+    endif	
+	
+    ifdef PULSE_LED
+	MOVLW  T_DESL_LED  ;RECARGA DO TEMPORIZADOR DE DESLIGAMENTO
+	MOVWF  Y2
+	MOVLW  .255
+	MOVWF  Y1
+    endif
+    
+    GOTO INICIO
+
+
+
+
+;--------------------------------------------------------------
+DELAYM
+   MOVWF  R0
+XC
+   CALL  AGUARDE
+   DECFSZ R0,F
+   GOTO XC
+   RETURN
+
+;****************************************************
+;PISCA LED LENTO
+LED0BLINK0
+   BSF    LED0        ;ACENDE LED0 (UMA PISCADA)
+   MOVLW  .10
+   CALL   DELAYM
+   BCF    LED0        ;APAGA LED0
+   MOVLW  .10
+   CALL   DELAYM
+   RETURN
+;****************************************************
+; Toggle the state of the LED
+TOGGLE_LED0
+	
+	BTFSC	LED0	; is the LED off?
+	GOTO	IS_ON			; Go to Is_On.  Will be skipped if the LED is off
+
+IS_OFF					; Executes if the LED is off
+	BSF LED0
+	RETURN
+
+IS_ON					; Executes if the LED is on
+	BCF LED0
+	RETURN
+
+;****************************************************
+; Toggle the state of the LED
+TOGGLE_LED1
+	
+	BTFSC	LED1	; is the LED off?
+	GOTO	IS_ON_LED1			; Go to Is_On.  Will be skipped if the LED is off
+
+IS_OFF_LED1					; Executes if the LED is off
+	BSF LED1
+	RETURN
+
+IS_ON_LED1					; Executes if the LED is on
+	BCF LED1
+	RETURN
+
+;****************************************************
+; Toggle the state of the LED
+TOGGLE_LED2
+	
+	BTFSC	LED2	; is the LED off?
+	GOTO	IS_ON_LED2			; Go to Is_On.  Will be skipped if the LED is off
+
+IS_OFF_LED2					; Executes if the LED is off
+	BSF LED2
+	RETURN
+
+IS_ON_LED2					; Executes if the LED is on
+	BCF LED2
+	RETURN
+
+;****************************************************
+; Toggle the state of the LED
+TOGGLE_LED3
+	
+	BTFSC	LED3	; is the LED off?
+	GOTO	IS_ON_LED3			; Go to Is_On.  Will be skipped if the LED is off
+
+IS_OFF_LED3					; Executes if the LED is off
+	BSF LED3
+	RETURN
+
+IS_ON_LED3					; Executes if the LED is on
+	BCF LED3
+	RETURN
+
+;****************************************************
+;PEGA PONTEIRO NA EEPROM - ULTIMO ENDEREÇO
+PPT
+    MOVLW .0
+    CALL  EEREAD    ;LE  PONTEIRO DA EEPROM
+    RETURN
+
+AGUARDE		;ROTINA DE ATRASO ENTRE OPERAÇÕES DE EEPROM
+
+	MOVLW  .64
+	MOVWF	R1
+CG2
+	CLRWDT
+	MOVLW	.255
+	MOVWF	R2
+	
+	DECFSZ	R2,F
+	GOTO $-1
+	DECFSZ	R1,F
+	GOTO CG2
+	RETURN
+
+
+EEWRITE
+
+; ******* EEPROM WRITE ENABLE ******************
+;endereço esta em ADDRESS
+;DADOS A ESCREVER ESTA EM TMP(MSB)  
+
+
+	BANK1
+	movwf EEADR	
+	BANK0
+	MOVFW  TMP		;PEGA PRIMEIRO DADO
+	BANK1
+	movwf EEDATA
+	bcf EECON1, EEIF	
+	bsf EECON1, WREN ; enable Write\par
+	movlw 0x55	
+	movwf EECON2	
+	movlw 0xAA	
+	movwf EECON2	
+	bsf EECON1, WR	
+WRITE_SN_A clrwdt	
+	btfsc EECON1, WR ; Write complete ?\par
+	goto WRITE_SN_A	
+	bcf EECON1, WREN ; disable Write\par
+ 	BANK0
+
+	clrwdt	
+	
+ESPERA1			;DELAY ENTRE APAGAMENTOS
+	CALL  AGUARDE
+	RETURN
+
+
+
+EEREAD
+;endereço esta em ADDRESS
+;DADOS LIDOS SERÃO ESCRITOS EM TMP0
+        
+	clrwdt	
+;	MOVFW  ADDRESS
+	
+	BANK1
+	movwf EEADR	
+	bsf EECON1, RD ; do a read\par
+	clrwdt
+    btfsc EECON1, RD ; Read done ?\par
+	goto $-1	
+	movf EEDATA,W
+	BANK0
+	MOVWF	TMP	;RECUPERA PRIMEIRO NUMERO DA EEPROM
+	clrwdt	
+
+	RETURN
+;------------------------------------------------------------------------------
+APAGAEEPROM ;OK TESTADA E APROVADA
+; ROTINA PARA APAGAR TODAS AS POSIÇOES DA EEPROM DO 16F628
+	
+
+
+	MOVLW 0X80		;TOTAL DE 128 + 1 BYTES DE EEPROM
+	MOVWF	AUX
+RET6
+	CLRWDT
+	MOVFW	AUX
+	MOVLW   .1  ;ACERTA ENDEREÇO TIRANDO 1
+	SUBWF	AUX,W
+	BANK1
+	movwf EEADR	
+	MOVLW	0XFF
+	movwf EEDATA
+	bcf EECON1, EEIF	
+	bsf EECON1, WREN ; enable Write\par
+	movlw 0x55	
+	movwf EECON2	
+	movlw 0xAA	
+	movwf EECON2	
+	bsf EECON1, WR	
+WRITE_SN_C clrwdt	
+	btfsc EECON1, WR ; Write complete ?\par
+	goto WRITE_SN_C	
+	bcf EECON1, WREN ; disable Write\par
+ 	BANK0
+	DECFSZ	AUX,F
+	GOTO  ESPERA
+	clrwdt	
+	RETLW 0H
+ESPERA			;DELAY ENTRE APAGAMENTOS
+	MOVLW  .8
+	MOVWF	R1
+CG1
+	MOVLW	.255
+	MOVWF	R2
+	
+	DECFSZ	R2,F
+	GOTO $-1
+	DECFSZ	R1,F
+	GOTO CG1
+	GOTO RET6
+    
+   ORG H'2100' 
+   DE  .0
+
+     end

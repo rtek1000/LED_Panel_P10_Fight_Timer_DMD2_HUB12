@@ -15,9 +15,9 @@
 
 //#define skip_LM35 1
 
-SoftwareSerial softSerial(5, 4);// RX, TX
+//SoftwareSerial softSerial(5, 4);// RX, TX
 
-#define dfPlayerStatus 3 // input
+// #define dfPlayerStatus 3 // input
 
 #define DEBUG 1
 
@@ -32,11 +32,20 @@ SoftwareSerial softSerial(5, 4);// RX, TX
 #define input_ctrl_right_pin A1 // 3 // btn 3 - 3  (Right)
 
 // Temperature sensor
-#define LM35 A0 // To LM35/
+#define LM35 A6 // To LM35/
+
+// Corrective factor:
+// 28.3°C (Arduino) / 24.7°C (0.247V using Multimeter) = 1.145748988
+// 0.48828125 / 1.145748988 = 0.426167734
+#define Corrective_Factor 0.426167734
 
 // Bell for warnings
-#define Bell 2 //A1 // output
+//#define Bell 2/ //A1 // output
 
+#define SQW_interruptPin 2
+
+byte state_sqw = LOW;
+byte state_sqw_old = LOW;
 // Unused
 
 // For P10 panel (These pins are mapped in the library DMD)
@@ -111,9 +120,20 @@ enum {
   func_menu_bell_ding_mode,
   func_menu_bell_ding_mode_intv,
   func_menu_set_volume_beep,
-  func_menu_set_volume_music,
+  // func_menu_set_volume_music,
   func_menu_set_volume_voice
 } state_ref;
+
+enum {
+  audio_off = 0,
+  audio_beep,
+  audio_voice,
+  audio_beep_voice,
+  audio_music,
+  audio_beep_music,
+  audio_music_voice,
+  audio_beep_music_voice
+} audio_ref;
 
 #define set_menu_timeout 60 // tempo de timeout para abandonar menus, decremento em 500ms
 
@@ -200,7 +220,7 @@ byte round_cnt1 = 1;
 
 unsigned long previousMillis = 0; // will store last time LED was updated
 unsigned long currentMillis;
-#define intervalMillis 500 // interval at which to blink (milliseconds)
+#define intervalMillis 499 // interval at which to blink (milliseconds)
 unsigned long previousMillis_meter = 0; // will store last time LED was updated
 
 unsigned int wr_rtc_yy;
@@ -235,6 +255,8 @@ uint32_t millisAutoPlay = 0;
 
 uint32_t millisControl = 0;
 
+uint32_t continuous_play_millis = 0;
+
 RTC_DS3231 rtc; //RTC_DS3231
 
 SoftDMD dmd(1, 1); // DMD controls the entire display
@@ -242,6 +264,8 @@ SoftDMD dmd(1, 1); // DMD controls the entire display
 DMD_TextBox box( dmd); // "box" provides a text box to automatically write to/scroll the display
 
 DateTime now;
+
+DFRobotDFPlayerMini DFPlayer1;
 
 void delayWdt(unsigned long dly) {
   while (dly--) {

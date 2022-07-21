@@ -10,7 +10,15 @@ void temperature_read(void) {
   byte loop1;
   float calc_temp1;
 
-  temperature_array[temperature_index] = analogRead(LM35) / 9.31;
+  // analogRead(LM35) / 9.31; // analog ref internal
+  // Deg °C = (float(analogRead(LM35)) * (5.0 / (1024.0))) / 0.01;
+
+  // Corrective factor:
+  // 28.3°C (Arduino) / 24.7°C (0.247V using Multimeter) = 1.145748988
+  // 0.48828125 / 1.145748988 = 0.426167734
+//#define Corrective_Factor 0.426167734
+  
+  temperature_array[temperature_index] = float(analogRead(LM35)) * Corrective_Factor; // 0.48828125 / 1.145748988
 
   if (temperature_index <= max_array_temp) {
     temperature_index++;
