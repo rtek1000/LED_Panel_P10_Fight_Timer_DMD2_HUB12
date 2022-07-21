@@ -13,7 +13,7 @@ Note: Work in progress, sorry.
 - - Playing music on USB flash drive and SD card (player also has FM and Bluetooth).
 - - Panel operation is independent of mp3 player (shares audio output).
 - - Displayed temperature range from 2 to 150 °C (Lower temperature needs different hardware).
-
+- - Battery charge level indication (Controlled by the PN951 power bank).
 
 - Notes:
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
