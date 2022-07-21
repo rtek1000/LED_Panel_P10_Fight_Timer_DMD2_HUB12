@@ -15,6 +15,8 @@ Note: Work in progress, sorry.
 - - Displayed temperature range from 2 to 150 °C (Lower temperature needs different hardware).
 - - Battery charge level indication (Controlled by the PN951 power bank).
 
+- Usage temperature up to 45°C maximum due to PN-951 power bank battery.
+
 - Notes:
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
 - - Researched about the rolling code RF remote control, but it is complicated and the mid-range model with HCSxx is already being considered unsafe.
