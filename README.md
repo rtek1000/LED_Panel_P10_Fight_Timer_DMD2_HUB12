@@ -12,6 +12,7 @@ Note: Work in progress, sorry.
 - - Independent volume control for beep and voice (player has its volume control).
 - - Playing music on USB flash drive and SD card (player also has FM and Bluetooth).
 - - Panel operation is independent of mp3 player (shares audio output).
+- - Displayed temperature range from 2 to 150 °C (Lower temperature needs different hardware)
 
 
 - Notes:
