@@ -25,6 +25,7 @@ Note: Work in progress, sorry.
 - - sudo apt-get install replaygain
 - - - replaygain -r -1 *.mp3
 - - https://en.wikipedia.org/wiki/ReplayGain
+- - ---> Audacity software performs better <---
 
 ## Licence:
 
