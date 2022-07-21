@@ -1,6 +1,6 @@
 Note: Work in progress, sorry.
 
-# Fight_Timer_DMD_HUB12
+# LED Panel P10 Fight Timer DMD2 HUB12
 
 ## Features:
 - Training (fight) time count and interval count between trainings.
