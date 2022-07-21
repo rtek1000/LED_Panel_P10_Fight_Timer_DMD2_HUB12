@@ -4,6 +4,13 @@ Note: Work in progress, sorry.
 
 ## Features:
 - Training (fight) time count and interval count between trainings.
+- - Countdown time.
+- - Allows user to see date and time while counting (makes automatic return).
+- - Automatically return when idle within the menu tree.
+- - Audio visual signaling, beep and voice (mp3 files)
+- - Playing music on USB flash drive and SD card (player also has FM and Bluetooth)
+- - Panel operation is independent of mp3 player (shares audio output).
+
 
 - Notes:
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
