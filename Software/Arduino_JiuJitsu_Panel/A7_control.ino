@@ -94,83 +94,14 @@ void controller(void) {
   input_ctrl_right = false;
 }
 
-//void ctrl_left_cmd(void) {
-//  dmd.clearScreen();
-//  delayWdt(50);
-//
-//  if ((state == func_menu_reset_round) | (state == func_menu_set_round)
-//      | (state == func_menu_set_round_recall_normal)
-//      | (state == func_menu_set_round_recall_interval)
-//      | (state == func_menu_set_round_recall_normal_min10)
-//      | (state == func_menu_set_round_recall_normal_min1)
-//      | (state == func_menu_set_round_recall_normal_sec10)
-//      | (state == func_menu_set_round_recall_normal_sec1)
-//      | (state == func_menu_set_round_recall_interval_min10)
-//      | (state == func_menu_set_round_recall_interval_min1)
-//      | (state == func_menu_set_round_recall_interval_sec10)
-//      | (state == func_menu_set_round_recall_interval_sec1)
-//      | (state == func_menu_set_round10) | (state == func_menu_set_round1)
-//      | (state == func_menu_set_round_time_mode)
-//      | (state == func_menu_set_round_time_min10)
-//      | (state == func_menu_set_round_time_min1)
-//      | (state == func_menu_set_round_time_sec10)
-//      | (state == func_menu_set_round_time_sec1)
-//      | (state == func_menu_bell_ding_mode)
-//      | (state == func_menu_set_volume_beep)
-//      | (state == func_menu_set_volume_music)
-//      | (state == func_menu_set_volume_voice)) {
-//    show_menu_timeout = 0;
-//    blink_state = false;
-//    pause_state = pause_state_previous;
-//    state = time_sel;
-//    delayWdt(100);
-//    show_round_and_time();
-//    update_recall();
-//  } else if ((state == func_clock) | (state == func_date)) {
-//    state = time_sel;
-//    if (time_sel == func_interval) {
-//      blink_state = true;
-//    } else {
-//      blink_state = false;
-//    }
-//    show_round_and_time();
-//  } else if ((state == func_normal) | (state == func_interval)) {
-//    time_sel = state;
-//    blink_state = false;
-//    state = func_clock;
-//    show_clock_and_temperature();
-//  } else if ((state == func_menu_set_hour1) | (state == func_menu_set_hour10)
-//             | (state == func_menu_set_min1) | (state == func_menu_set_min10)
-//             | (state == func_menu_set_time_date_bright)) { //(state == "menu_set_time_date")
-//    show_menu_timeout = 0;
-//    clock_show_cnt = 0;
-//    state = func_clock;
-//
-//    blink_state = false;
-//    show_clock_and_temperature();
-//  } else if ((state == func_menu_set_day1) | (state == func_menu_set_day10)
-//             | (state == func_menu_set_month1) | (state == func_menu_set_month10)
-//             | (state == func_menu_set_year1)
-//             | (state == func_menu_set_year10)) {
-//    show_menu_timeout = 0;
-//    date_show_cnt = 0;
-//    state = func_date;
-//
-//    blink_state = false;
-//    show_date();
-//  }
-//
-//  show_menu_timeout = set_menu_timeout;
-//}
-
 void ctrl_left_cmd(void) {
   dmd.clearScreen();
   delayWdt(50);
 
   switch (state) {
     case func_menu_reset_round:
-    
-    case func_menu_set_round:    
+
+    case func_menu_set_round:
     case func_menu_set_round10:
     case func_menu_set_round1:
 
@@ -196,7 +127,7 @@ void ctrl_left_cmd(void) {
     case func_menu_bell_ding_mode_intv:
 
     case func_menu_set_volume_beep:
-    case func_menu_set_volume_music:
+    //    case func_menu_set_volume_music:
     case func_menu_set_volume_voice:
       show_menu_timeout = 0;
       blink_state = false;
@@ -299,14 +230,16 @@ void ctrl_cent_cmd(void) {
       show_round_and_time();
       break;
     case func_menu_bell_ding_mode:
-      if (bell_ding_mode_val < 7)
+      // if (bell_ding_mode_val < 7) // 7 for Voice + Music + Beep
+      if (bell_ding_mode_val < 3) // 3 for Voice + Beep
         bell_ding_mode_val++;
       else
         bell_ding_mode_val = 0;
       update_recall();
       break;
     case func_menu_bell_ding_mode_intv:
-      if (bell_ding_mode_val_intv < 7)
+      // if (bell_ding_mode_val_intv < 7) // 7 for Voice + Music + Beep
+      if (bell_ding_mode_val_intv < 3) // 3 for Voice + Beep
         bell_ding_mode_val_intv++;
       else
         bell_ding_mode_val_intv = 0;
@@ -320,7 +253,7 @@ void ctrl_cent_cmd(void) {
     case func_menu_set_round_recall_normal:
       state = func_menu_set_round_recall_normal_min10;
       blink_state = true;
-      dmd.drawString(2, line1, "Fight");
+      dmd.drawString(2, line1, "Round");
       show_recal_round_normal();
       break;
     case func_menu_set_round_recall_interval:
@@ -353,12 +286,12 @@ void ctrl_cent_cmd(void) {
       else
         time_sel = func_normal;
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_round_time_min10:
       if (L10 < 9)
         L10++;
@@ -383,12 +316,12 @@ void ctrl_cent_cmd(void) {
       else
         R1 = 0;
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_round_recall_normal_min10:
       if (round_recall_min10 < 9)
         round_recall_min10++;
@@ -417,12 +350,12 @@ void ctrl_cent_cmd(void) {
         round_recall_sec1 = 0;
       update_recall();
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_round_recall_interval_min10:
       if (interval_recall_min10 < 9)
         interval_recall_min10++;
@@ -451,12 +384,12 @@ void ctrl_cent_cmd(void) {
         interval_recall_sec1 = 0;
       update_recall();
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_normal:
       if (pause_state == true) {
         pause_state = false;
@@ -472,8 +405,12 @@ void ctrl_cent_cmd(void) {
     case func_interval:
       if (pause_state == true) {
         pause_state = false;
+        show_round_and_time();
+        bell_start();
       } else {
         pause_state = true;
+        show_round_and_time();
+        bell_stop();
       }
       show_round_and_time();
       break;
@@ -489,12 +426,12 @@ void ctrl_cent_cmd(void) {
       dmd.clearScreen();
       show_clock_and_temperature();
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_hour1:
       HH_10 = wr_rtc_HH / 10;
       HH_1 = wr_rtc_HH - (HH_10 * 10);
@@ -561,12 +498,12 @@ void ctrl_cent_cmd(void) {
       update_recall();
       show_clock2();
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_day1:
       dd_10 = wr_rtc_dd / 10;
       dd_1 = wr_rtc_dd - (dd_10 * 10);
@@ -703,12 +640,12 @@ void ctrl_cent_cmd(void) {
       wr_rtc_yy = 2000 + ((yy_10 * 10) + yy_1);
       update_rtc();
       break;
-    default:
-      // statements
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      // statements
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_volume_beep:
       if (beep_volume < 30)
         beep_volume++;
@@ -717,14 +654,14 @@ void ctrl_cent_cmd(void) {
       dmd.drawString(2, line1, "Volum");
       dmd.drawString(2, line2, "B: " + String(beep_volume));
       break;
-    case func_menu_set_volume_music:
-      if (music_volume < 30)
-        music_volume++;
-      else
-        music_volume = 1;
-      dmd.drawString(2, line1, "Volum");
-      dmd.drawString(2, line2, "M: " + String(music_volume));
-      break;
+    //    case func_menu_set_volume_music:
+    //      if (music_volume < 30)
+    //        music_volume++;
+    //      else
+    //        music_volume = 1;
+    //      dmd.drawString(2, line1, "Volum");
+    //      dmd.drawString(2, line2, "M: " + String(music_volume));
+    //      break;
     case func_menu_set_volume_voice:
       if (voice_volume < 30)
         voice_volume++;
@@ -765,7 +702,7 @@ void ctrl_right_cmd(void) {
     case func_menu_set_round:
       state = func_menu_set_round_recall_normal;
       dmd.drawString(2, line1, "Set");
-      dmd.drawString(2, line2, "Ft?");
+      dmd.drawString(2, line2, "Rd?");
       break;
     case func_menu_set_round_recall_normal:
       state = func_menu_set_round_recall_interval;
@@ -788,27 +725,29 @@ void ctrl_right_cmd(void) {
       break;
     case func_menu_set_volume_beep:
       blink_state = false;
-      state = func_menu_set_volume_music;
-      dmd.drawString(2, line1, "Volum");
-      dmd.drawString(2, line2, "M: " + String(music_volume));
-      break;
-    case func_menu_set_volume_music:
-      blink_state = false;
+      // state = func_menu_set_volume_music;
       state = func_menu_set_volume_voice;
       dmd.drawString(2, line1, "Volum");
+      //      dmd.drawString(2, line2, "M: " + String(music_volume));
       dmd.drawString(2, line2, "V: " + String(voice_volume));
       break;
+    //    case func_menu_set_volume_music:
+    //      blink_state = false;
+    //      state = func_menu_set_volume_voice;
+    //      dmd.drawString(2, line1, "Volum");
+    //      dmd.drawString(2, line2, "V: " + String(voice_volume));
+    //      break;
     case func_menu_set_volume_voice:
       state = func_menu_reset_round; // retorna
       blink_state = false;
       ctrl_left_cmd(); // exit
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_round_time_mode:
       state = func_menu_set_round10;
       break;
@@ -830,12 +769,12 @@ void ctrl_right_cmd(void) {
     case func_menu_set_round_time_sec1:
       state = func_menu_set_round_time_mode;
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    // switch (state) {
     case func_menu_set_round_recall_normal_min10:
       state = func_menu_set_round_recall_normal_min1;
       break;
@@ -849,12 +788,12 @@ void ctrl_right_cmd(void) {
       state = func_menu_set_round_recall_normal_min10;
       break;
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_round_recall_interval_min10:
       state = func_menu_set_round_recall_interval_min1;
       break;
@@ -867,12 +806,12 @@ void ctrl_right_cmd(void) {
     case func_menu_set_round_recall_interval_sec1:
       state = func_menu_set_round_recall_interval_min10;
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_clock:
       state = func_menu_set_time_date_bright;
       blink_state = true;
@@ -881,12 +820,12 @@ void ctrl_right_cmd(void) {
       state = func_menu_set_day10;
       blink_state = true;
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_time_date_bright:
       state = func_menu_set_hour10;
       break;
@@ -902,12 +841,12 @@ void ctrl_right_cmd(void) {
     case func_menu_set_min1:
       state = func_menu_set_time_date_bright;
       break;
-    default:
-      //
-      break;
-  }
-
-  switch (state) {
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_day10:
       state = func_menu_set_day1;
       break;
