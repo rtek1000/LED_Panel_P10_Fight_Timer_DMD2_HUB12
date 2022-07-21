@@ -4,6 +4,8 @@ Note: Work in progress, sorry.
 
 ## Features:
 - Training (fight) time count and interval count between trainings.
+
+- Notes:
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
 - - Researched about the rolling code RF remote control, but it is complicated and the mid-range model with HCSxx is already being considered unsafe.
     (Search for MCS3142 if you want something safer than the HCS family)
