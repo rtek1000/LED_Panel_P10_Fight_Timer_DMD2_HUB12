@@ -4,6 +4,18 @@ Note: Work in progress, sorry.
 
 ## Features:
 - Training (fight) time count and interval count between trainings.
+- - Countdown time.
+- - Panel brightness adjustment.
+- - Allows user to see date and time while counting (makes automatic return).
+- - Automatically return when idle within the menu tree.
+- - Audio visual signaling, beep and voice (mp3 files)
+- - Independent volume control for beep and voice (player has its volume control).
+- - Playing music on USB flash drive and SD card (player also has FM and Bluetooth).
+- - Panel operation is independent of mp3 player (shares audio output).
+- - Displayed temperature range from 2 to 150 °C (Lower temperature needs different hardware).
+
+
+- Notes:
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
 - - Researched about the rolling code RF remote control, but it is complicated and the mid-range model with HCSxx is already being considered unsafe.
     (Search for MCS3142 if you want something safer than the HCS family)
