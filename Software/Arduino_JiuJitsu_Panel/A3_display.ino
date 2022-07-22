@@ -102,7 +102,7 @@ void decrement_time_and_show(void) {
 
           dmd.clearScreen();
 
-          delayWdt(1);
+          delayWdt(3);
 
           get_rtc(); // Read RTC temperature to protect the bank power battery
         } else {

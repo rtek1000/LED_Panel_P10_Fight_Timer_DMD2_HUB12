@@ -1,7 +1,7 @@
 // https://github.com/rtek1000/LED_Panel_P10_Fight_Timer_DMD2_HUB12
 
 // Notes:
-// Music was removed because DFPlayer was frozen and didn't respond after restarting the power
+// Music was removed because DFPlayer was frozen, only returned to responding after power reset
 
 #include <avr/wdt.h> // Arduino IDE
 

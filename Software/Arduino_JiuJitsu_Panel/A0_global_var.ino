@@ -39,13 +39,42 @@
 // 0.48828125 / 1.145748988 = 0.426167734
 #define Corrective_Factor 0.426167734
 
-// Bell for warnings
+// Bell defines (for warnings)
+// MP3 files located on DFPlayer Mini's SD card
+// The sound must be on the SD card warning the start of the round (1.mp3)
+// The sound must be on the SD card warning the start of the interval (2.mp3)
+#define beep_folder 1 // folder 01
+
+#define beep_start_num 1 // file 001.mp3
+#define beep_stop_num 2 // file 002.mp3
+
+#define beep_start_time 1500 // 1500ms
+#define beep_stop_time 1500 // 1500ms
 //#define Bell 2/ //A1 // output
 
+// Voice defines (for warnings)
+// MP3 files located on DFPlayer Mini's SD card
+// Voices must be on the SD card speaking the numbers 1 to 99 (from 1.mp3 to 99.mp3)
+// The voice must be on the SD card speaking the round start warning (250.mp3)
+// The voice must be on the SD card speaking the interval start warning (252.mp3)
+
+#define voice_folder 2 // folder 02
+
+#define voice_001 250 // file 001.mp3
+#define voice_099 250 // file 099.mp3
+#define voice_round 250 // file 250.mp3
+#define voice_interval 252 // file 252.mp3
+
+#define voice_001_099_time 2000 // 2000ms
+#define voice_round_time 1500 // 1500ms
+#define voice_interval_time 1500 // 1500ms
+
+// RTC SQW
 #define SQW_interruptPin 2
 
 byte state_sqw = LOW;
 byte state_sqw_old = LOW;
+
 // Unused
 
 // For P10 panel (These pins are mapped in the library DMD)

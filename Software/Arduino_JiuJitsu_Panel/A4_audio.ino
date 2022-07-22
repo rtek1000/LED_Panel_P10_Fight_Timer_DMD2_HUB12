@@ -24,8 +24,8 @@ void bell_stop(void) {
       // delayWdt(100);
 
       // dfPlayFolder(2, 2); // beep
-      // DFPlayer1.playFolder(2, 2);
-      DFPlayer1.playMp3Folder(11);
+      DFPlayer1.playFolder(beep_folder, beep_stop_num);
+      // DFPlayer1.playMp3Folder(11);
 
       // delayWdt(100);
 
@@ -44,10 +44,10 @@ void bell_stop(void) {
 
       for (int i = 0; i < 2; i++) {
         // dfPlayFolder(2, 2); // beep
-        // DFPlayer1.playFolder(2, 2);
-        DFPlayer1.playMp3Folder(11);
+        DFPlayer1.playFolder(beep_folder, beep_stop_num);
+        // DFPlayer1.playMp3Folder(11);
 
-        delayWdt(1500);
+        delayWdt(beep_stop_time);
 
         // waitDfPlayer(1);
       }
@@ -65,17 +65,17 @@ void bell_stop(void) {
 
       if (state == func_normal) {
         // dfPlayFolder(1, 251); // round
-        DFPlayer1.playFolder(15, 250);
+        DFPlayer1.playFolder(voice_folder, voice_round);
       } else {
         // dfPlayFolder(1, 246); // interval
-        DFPlayer1.playFolder(15, 252);
+        DFPlayer1.playFolder(voice_folder, voice_interval);
       }
 
-      delayWdt(1500);
+      delayWdt(voice_interval_time);
 
       DFPlayer1.playFolder(15, (round_cnt10 * 10) + round_cnt1);
 
-      delayWdt(2000);
+      delayWdt(voice_001_099_time);
 
       // waitDfPlayer(1);
 
@@ -108,8 +108,8 @@ void bell_start(void) {
       // delayWdt(100);
 
       // dfPlayFolder(2, 1); // beep
-      // DFPlayer1.playFolder(2, 1);
-      DFPlayer1.playMp3Folder(12);
+      DFPlayer1.playFolder(beep_folder, beep_start_num);
+      //DFPlayer1.playMp3Folder(12);
 
       // delayWdt(100);
 
@@ -137,10 +137,10 @@ void bell_start(void) {
         //      voice_volume = EEPROM.read(voice_volume_addr);
 
         // dfPlayFolder(2, 1); // beep
-        // DFPlayer1.playFolder(2, 1);
-        DFPlayer1.playMp3Folder(12);
+        DFPlayer1.playFolder(beep_folder, beep_start_num);
+        // DFPlayer1.playMp3Folder(12);
 
-        delayWdt(1500);
+        delayWdt(beep_stop_time);
 
         // waitDfPlayer(1);
       }
@@ -159,20 +159,20 @@ void bell_start(void) {
 
       if (state == func_normal) {
         // dfPlayFolder(1, 251); // round
-        DFPlayer1.playFolder(15, 250);
+        DFPlayer1.playFolder(voice_folder, voice_round);
       } else {
         // dfPlayFolder(1, 246); // interval
-        DFPlayer1.playFolder(15, 252);
+        DFPlayer1.playFolder(voice_folder, voice_interval);
       }
 
-      delayWdt(1500);
+      delayWdt(voice_round_time);
 
       // waitDfPlayer(1);
 
       // dfPlayFolder(1, ((round_cnt10 * 10) + round_cnt1)); // round
-      DFPlayer1.playFolder(15, (round_cnt10 * 10) + round_cnt1);
+      DFPlayer1.playFolder(voice_folder, (round_cnt10 * 10) + round_cnt1);
 
-      delayWdt(2000);
+      delayWdt(voice_001_099_time);
 
       // waitDfPlayer(1);
     }
@@ -194,23 +194,23 @@ void bell_start(void) {
   }
 }
 
-void Bell_ding(void) {
-  //  digitalWrite(Bell, HIGH);
-  //
-  //  delayWdt(10);
-  //
-  //  digitalWrite(Bell, LOW);
-  //
-  //  delayWdt(100);
-  //
-  //  digitalWrite(Bell, HIGH);
-  //
-  //  delayWdt(10);
-  //
-  //  digitalWrite(Bell, LOW);
-  //
-  //  delayWdt(200);
-}
+//void Bell_ding(void) {
+//  //  digitalWrite(Bell, HIGH);
+//  //
+//  //  delayWdt(10);
+//  //
+//  //  digitalWrite(Bell, LOW);
+//  //
+//  //  delayWdt(100);
+//  //
+//  //  digitalWrite(Bell, HIGH);
+//  //
+//  //  delayWdt(10);
+//  //
+//  //  digitalWrite(Bell, LOW);
+//  //
+//  //  delayWdt(200);
+//}
 
 //void musicRandStart(void) {
 //  for (int i = 0; i < 25; i++) {
