@@ -32,8 +32,8 @@ Note: Work in progress, sorry.
 - Arduino Pro Mini 5V 16MHz
 - P10 Panel 32x16 (Red led)
 - Power bank Pineng PN-951 (Good current capacity (up to 2 Amps), low standby consumption, charge indicator via LED, slim body, 10000mA 3.7V battery, CI IP5306)
--  ̶E̶S̶P̶8̶2̶6̶6̶ ̶(̶F̶i̶r̶m̶w̶a̶r̶e̶ ̶e̶s̶p̶-̶l̶i̶n̶k̶ ̶v̶3̶.̶2̶.̶4̶7̶-̶g̶9̶c̶6̶5̶3̶0̶d̶)̶
--  ̶E̶N̶C̶2̶8̶J̶6̶0̶ ̶(̶N̶o̶t̶ ̶i̶m̶p̶l̶e̶m̶e̶n̶t̶e̶d̶ ̶y̶e̶t̶)̶
+-  ̶E̶S̶P̶8̶2̶6̶6̶ ̶(̶F̶i̶r̶m̶w̶a̶r̶e̶ ̶e̶s̶p̶-̶l̶i̶n̶k̶ ̶v̶3̶.̶2̶.̶4̶7̶-̶g̶9̶c̶6̶5̶3̶0̶d̶)̶ RF remote control only (Low memory)
+-  ̶E̶N̶C̶2̶8̶J̶6̶0̶ ̶(̶N̶o̶t̶ ̶i̶m̶p̶l̶e̶m̶e̶n̶t̶e̶d̶ ̶y̶e̶t̶)̶ (Low memory)
 - DFPlayer Mini (It may be interesting to normalize the audio before playing)
 - -  ̶S̶e̶e̶ ̶t̶h̶i̶s̶ ̶a̶p̶p̶:̶ ̶r̶e̶p̶l̶a̶y̶g̶a̶i̶n̶
 - -  ̶s̶u̶d̶o̶ ̶a̶p̶t̶-̶g̶e̶t̶ ̶i̶n̶s̶t̶a̶l̶l̶ ̶r̶e̶p̶l̶a̶y̶g̶a̶i̶n̶
