@@ -1,7 +1,7 @@
 // https://github.com/rtek1000/LED_Panel_P10_Fight_Timer_DMD2_HUB12
 
 // Notes:
-// Music removed because DFPlayer has stopped inextected
+// Music was removed because DFPlayer was frozen and didn't respond after restarting the power
 
 #include <avr/wdt.h> // Arduino IDE
 
@@ -16,7 +16,5 @@
 #include <Wire.h> // Arduino IDE
 
 #include "RTClib.h" // https://github.com/adafruit/RTClib/blob/master/src/RTClib.h
-
-//#include <SoftwareSerial.h> // Arduino IDE
 
 #include "DFRobotDFPlayerMini.h" // https://github.com/DFRobot/DFRobotDFPlayerMini

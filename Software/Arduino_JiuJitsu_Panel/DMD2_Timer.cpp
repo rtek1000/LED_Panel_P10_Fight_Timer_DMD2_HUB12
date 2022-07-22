@@ -54,8 +54,6 @@ static void inline scan_running_dmds();
 
 #ifdef __AVR__
 
-static unsigned char clockSelectBits;
-
 /* This AVR timer ISR uses the standard /64 timing used by Timer1 in the Arduino core,
    so none of those registers (or normal PWM timing) is changed. We do skip 50% of ISRs
    as 50% timer overflows is approximately every 4ms, which is fine for flicker-free
