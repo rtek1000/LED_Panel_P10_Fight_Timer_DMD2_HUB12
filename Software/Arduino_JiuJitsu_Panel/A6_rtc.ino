@@ -16,6 +16,8 @@ void get_rtc(void) {
   dmd.stop();
   
   now = rtc.now();
+
+  rtc_temp = rtc.getTemperature();
   
   Ds3231SqwPinMode mode = rtc.readSqwPinMode();
   if ( mode != DS3231_SquareWave1Hz ) {

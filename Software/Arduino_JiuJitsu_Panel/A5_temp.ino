@@ -7,8 +7,8 @@ void temperature_init(void) {
 }
 
 void temperature_read(void) {
-  byte loop1;
-  float calc_temp1;
+  byte loop1 = 0;
+  float calc_temp1 = 0;
 
   // analogRead(LM35) / 9.31; // analog ref internal
   // Deg °C = (float(analogRead(LM35)) * (5.0 / (1024.0))) / 0.01;

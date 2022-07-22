@@ -1,7 +1,3 @@
-void blink_sqw() {
-  state_sqw = !state_sqw;
-}
-
 void loop (void) {
   if (millis() > (millisControl + 100)) {
     millisControl = millis();
@@ -9,16 +5,10 @@ void loop (void) {
     controller();
   }
 
-  // currentMillis = millis();
-
-  //if ((currentMillis - previousMillis) >= intervalMillis) {
-  //if (state_sqw != state_sqw_old) {
   state_sqw = digitalRead(SQW_interruptPin);
 
   if (state_sqw != state_sqw_old) {
-    // previousMillis = currentMillis;
     state_sqw_old = state_sqw;
-    //state_sqw_old = digitalRead(SQW_interruptPin);
 
     show_date_time();
 

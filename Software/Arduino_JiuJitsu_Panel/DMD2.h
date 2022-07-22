@@ -242,7 +242,6 @@ protected:
   int8_t pin_other_cs; // CS pin to check before SPI behaviour, only makes sense for SPIDMD
 
   uint8_t brightness;
-
 };
 
 class SPIDMD : public BaseDMD

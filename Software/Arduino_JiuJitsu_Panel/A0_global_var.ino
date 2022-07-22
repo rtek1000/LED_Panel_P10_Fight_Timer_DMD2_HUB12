@@ -78,6 +78,12 @@ byte state_sqw_old = LOW;
 //------ Display P10 line position - start
 #define line1 0
 #define line2 9
+#define dig1 2
+#define dig2 8
+#define dig3 14
+#define dig4 20
+#define dig5 26
+
 //------ Display P10 line position - end
 
 //------ Navigations & Menu - start
@@ -122,7 +128,7 @@ enum {
   func_menu_set_volume_beep,
   // func_menu_set_volume_music,
   func_menu_set_volume_voice
-} state_ref;
+};
 
 enum {
   audio_off = 0,
@@ -133,7 +139,7 @@ enum {
   audio_beep_music,
   audio_music_voice,
   audio_beep_music_voice
-} audio_ref;
+};
 
 #define set_menu_timeout 60 // tempo de timeout para abandonar menus, decremento em 500ms
 
@@ -166,20 +172,20 @@ int bell_ding_mode_val_intv = 0;
 
 byte show_menu_timeout = 0;
 
-//unsigned int show_round_stop_timeout = 0;
-
-byte show_sel_time_date; // value from eeprom
-
 byte show_sel_time_date_bright; // value from eeprom
 
 #define max_array_temp 5
 
-float temperature;
-float temperature_array[max_array_temp];
+float temperature = 0;
+float temperature_array[max_array_temp + 1] = {0}; // to resolve this warning: invokes undefined behavior (+1)
 byte temperature_index = 0;
 
+bool blink_temp = false;
+unsigned long millis_temp = 0;
+unsigned long millis_high_temp = 0;
+float rtc_temp = 0;
+
 byte state = 0; // 0 = func_normal; //clock
-//byte state_menu_timeout = 0;
 
 byte time_sel = func_normal;
 

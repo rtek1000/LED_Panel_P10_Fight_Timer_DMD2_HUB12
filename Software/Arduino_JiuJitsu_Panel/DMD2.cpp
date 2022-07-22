@@ -1,23 +1,25 @@
 /*
   DMD2 Implementation of SPIDMD, SoftDMD.
 
- Copyright (C) 2014 Freetronics, Inc. (info <at> freetronics <dot> com)
+  Copyright (C) 2014 Freetronics, Inc. (info <at> freetronics <dot> com)
 
- Updated by Angus Gratton, based on DMD by Marc Alexander.
+  Updated by Angus Gratton, based on DMD by Marc Alexander.
 
----
+  ---
 
- This program is free software: you can redistribute it and/or modify it under the terms
- of the version 3 GNU General Public License as published by the Free Software Foundation.
+  This program is free software: you can redistribute it and/or modify it under the terms
+  of the version 3 GNU General Public License as published by the Free Software Foundation.
 
- This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- See the GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License along with this program.
- If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License along with this program.
+  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include "DMD2.h"
+#include <avr/wdt.h> // Arduino IDE
 
 // Port registers are same size as a pointer (16-bit on AVR, 32-bit on ARM)
 typedef intptr_t port_reg_t;
@@ -56,7 +58,7 @@ void SPIDMD::beginNoTimer()
 void SPIDMD::writeSPIData(volatile uint8_t *rows[4], const int rowsize)
 {
   /* We send out interleaved data for 4 rows at a time */
-  for(int i = 0; i < rowsize; i++) {
+  for (int i = 0; i < rowsize; i++) {
     SPI.transfer(*(rows[3]++));
     SPI.transfer(*(rows[2]++));
     SPI.transfer(*(rows[1]++));
@@ -66,7 +68,7 @@ void SPIDMD::writeSPIData(volatile uint8_t *rows[4], const int rowsize)
 
 void BaseDMD::scanDisplay()
 {
-  if(pin_other_cs >= 0 && digitalRead(pin_other_cs) != HIGH)
+  if (pin_other_cs >= 0 && digitalRead(pin_other_cs) != HIGH)
     return;
   // Rows are send out in 4 blocks of 4 (interleaved), across all panels
 
@@ -96,7 +98,7 @@ void BaseDMD::scanDisplay()
   scan_row = (scan_row + 1) % 4;
 
   // Output enable pin is either fixed on, or PWMed for a variable brightness display
-  if(brightness == 255)
+  if (brightness == 255)
     digitalWrite(pin_noe, HIGH);
   else
     analogWrite(pin_noe, brightness);
@@ -113,7 +115,7 @@ SoftDMD::SoftDMD(byte panelsWide, byte panelsHigh)
 }
 
 SoftDMD::SoftDMD(byte panelsWide, byte panelsHigh, byte pin_noe, byte pin_a, byte pin_b, byte pin_sck,
-          byte pin_clk, byte pin_r_data)
+                 byte pin_clk, byte pin_r_data)
   : BaseDMD(panelsWide, panelsHigh, pin_noe, pin_a, pin_b, pin_sck),
     pin_clk(pin_clk),
     pin_r_data(pin_r_data)
@@ -135,8 +137,8 @@ static inline __attribute__((always_inline)) void softSPITransfer(uint8_t data, 
   // Emulate a single byte SPI transfer using software GPIO. Overall this is actually only marginally slower than normal SPI on AVR.
   //
   // MSB first, data captured on rising edge
-  for(uint8_t bit = 0; bit < 8; bit++) {
-    if(data & (1<<7))
+  for (uint8_t bit = 0; bit < 8; bit++) {
+    if (data & (1 << 7))
       *data_port |= data_mask;
     else
       *data_port &= ~data_mask;
@@ -154,7 +156,7 @@ void SoftDMD::writeSPIData(volatile uint8_t *rows[4], const int rowsize)
   volatile port_reg_t *port_r_data = (volatile port_reg_t *) portOutputRegister(digitalPinToPort(pin_r_data));
   port_reg_t mask_r_data = digitalPinToBitMask(pin_r_data);
 
-  for(int i = 0; i < rowsize; i++) {
+  for (int i = 0; i < rowsize; i++) {
     softSPITransfer(*(rows[3]++), port_r_data, mask_r_data, port_clk, mask_clk);
     softSPITransfer(*(rows[2]++), port_r_data, mask_r_data, port_clk, mask_clk);
     softSPITransfer(*(rows[1]++), port_r_data, mask_r_data, port_clk, mask_clk);
@@ -165,7 +167,7 @@ void SoftDMD::writeSPIData(volatile uint8_t *rows[4], const int rowsize)
 
 BaseDMD::BaseDMD(byte panelsWide, byte panelsHigh, byte pin_noe, byte pin_a, byte pin_b, byte pin_sck)
   :
-  DMDFrame(panelsWide*PANEL_WIDTH, panelsHigh*PANEL_HEIGHT),
+  DMDFrame(panelsWide * PANEL_WIDTH, panelsHigh * PANEL_HEIGHT),
   scan_row(0),
   pin_noe(pin_noe),
   pin_a(pin_a),

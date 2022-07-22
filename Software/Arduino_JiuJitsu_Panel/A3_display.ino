@@ -13,7 +13,7 @@
 //  while (next--) {
 //    //Serial.print(MESSAGE[MESSAGE.length() - next]);
 //    //box.print(MESSAGE[MESSAGE.length() - next]);
-//    dmd.drawString(2, 4, MESSAGE.substring(MESSAGE.length() - next));
+//    dmd.drawString(dig1, 4, MESSAGE.substring(MESSAGE.length() - next));
 //    delayWdt(200);
 //    //next++;
 //  }
@@ -28,34 +28,57 @@ void show_round_and_time(void) {
   show_time_round();
 }
 void show_round(void) {
-  //dmd.drawString(2, 0, " :" + String(round_cnt10) + String(round_cnt1));
-  dmd.drawString(14, 0, ":" + String(round_cnt10) + String(round_cnt1));
+  //dmd.drawString(dig1, line1, " :" + String(round_cnt10) + String(round_cnt1));
+  dmd.drawString(dig3, line1, ":" + String(round_cnt10) + String(round_cnt1));
 }
 void show_time_round(void) {
   if (time_sel == func_normal) {
-    dmd.drawString(2, 0, "Rd"); // "N"
+    dmd.drawString(dig1, line1, "Rd"); // "N"
   } else if (time_sel == func_interval) {
-    dmd.drawString(2, 0, "In");
+    dmd.drawString(dig1, line1, "In");
   }
 
-  dmd.drawString(2, line2,
+  dmd.drawString(dig1, line2,
                  String(L10) + String(L1) + ":" + String(R10) + String(R1));
 }
 
 void show_recal_round_normal(void) {
-  dmd.drawString(2, line2,
+  dmd.drawString(dig1, line2,
                  String(round_recall_min10) + String(round_recall_min1) + ":"
                  + String(round_recall_sec10) + String(round_recall_sec1));
 }
 
 void show_recal_round_interval(void) {
-  dmd.drawString(2, line2,
+  dmd.drawString(dig1, line2,
                  String(interval_recall_min10) + String(interval_recall_min1) + ":"
                  + String(interval_recall_sec10)
                  + String(interval_recall_sec1));
 }
 
 void decrement_time_and_show(void) {
+  if (rtc_temp > 45) { // rtc_temp, temperature
+    if (millis() > (millis_high_temp + 30000)) { // 30000
+      millis_high_temp = millis();
+
+      for (int i = 0; i < 3; i++) {
+        dmd.drawString(dig1, line1, "HIGH ");
+        dmd.drawString(dig1, line2, " TEMP");
+
+        delayWdt(200);
+        dmd.drawString(dig1, line1, "     ");
+        dmd.drawString(dig1, line2, "     ");
+
+        delayWdt(200);
+      }
+
+      dmd.drawString(dig1, line1, "T.int");
+      dmd.drawString(dig1, line2, ">45");
+      draw_degree(dig4, line2);
+
+      delayWdt(2000);
+    }
+  }
+
   if (((L10 != 0) | (L1 != 0) | (R10 != 0) | (R1 != 0))
       & (pause_state == false)) {
     //    if ((bell_ding_mode_val == true) & (state == func_interval)) {
@@ -76,6 +99,12 @@ void decrement_time_and_show(void) {
 
         if (L1 > 0) {
           L1--;
+
+          dmd.clearScreen();
+
+          delayWdt(1);
+
+          get_rtc(); // Read RTC temperature to protect the bank power battery
         } else {
           L1 = 9;
 
@@ -107,6 +136,9 @@ void decrement_time_and_show(void) {
     blink_alternate = false;
 
     dmd.clearScreen();
+    delayWdt(5);
+    get_rtc(); // Read RTC temperature to protect the bank power battery
+    millis_temp = millis();
     delayWdt(50);
     show_round_and_time();
     delayWdt(500);
@@ -127,6 +159,8 @@ void decrement_time_and_show(void) {
 
     blink_state = false;
     dmd.clearScreen();
+    get_rtc(); // Read RTC temperature to protect the bank power battery
+    millis_temp = millis();
     delayWdt(50);
 
     if (round_cnt1 < 9) {
@@ -151,76 +185,105 @@ void decrement_time_and_show(void) {
 void blink_preset(void) {
   blink_string1 = "_";
 
-  if ((state == func_interval) | (state == func_menu_bell_ding_mode) | (state == func_menu_bell_ding_mode_intv)) {
-    blink_position_X = 0;
-    blink_position_Y = line2;
-    blink_string1 = "      ";
-  }
-
-  if (state == func_menu_set_round10) {
-    blink_position_X = 20;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_round1) {
-    blink_position_X = 26;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_round_time_mode) {
-    blink_position_X = 2; // 26
-    blink_position_Y = line1;
-    blink_string1 = "  ";
-  } else if ((state == func_menu_set_round_time_min10)
-             | (state == func_menu_set_round_recall_normal_min10)
-             | (state == func_menu_set_round_recall_interval_min10)) {
-    blink_position_X = 2;
-    blink_position_Y = line2;
-  } else if ((state == func_menu_set_round_time_min1)
-             | (state == func_menu_set_round_recall_normal_min1)
-             | (state == func_menu_set_round_recall_interval_min1)) {
-    blink_position_X = 8;
-    blink_position_Y = line2;
-  } else if ((state == func_menu_set_round_time_sec10)
-             | (state == func_menu_set_round_recall_normal_sec10)
-             | (state == func_menu_set_round_recall_interval_sec10)) {
-    blink_position_X = 20;
-    blink_position_Y = line2;
-  } else if ((state == func_menu_set_round_time_sec1)
-             | (state == func_menu_set_round_recall_normal_sec1)
-             | (state == func_menu_set_round_recall_interval_sec1)) {
-    blink_position_X = 26;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_hour1) {
-    blink_position_X = 8;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_hour10) {
-    blink_position_X = 2;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_min1) {
-    blink_position_X = 25;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_min10) {
-    blink_position_X = 19;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_day1) {
-    blink_position_X = 8;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_day10) {
-    blink_position_X = 2;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_month1) {
-    blink_position_X = 25;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_month10) {
-    blink_position_X = 19;
-    blink_position_Y = line1;
-  } else if (state == func_menu_set_time_date_bright) {
-    blink_position_X = 14;
-    blink_position_Y = line1;
-    blink_string1 = "   ";
-  } else if (state == func_menu_set_year1) {
-    blink_position_X = 22;
-    blink_position_Y = line2;
-  } else if (state == func_menu_set_year10) {
-    blink_position_X = 16;
-    blink_position_Y = line2;
+  switch (state) {
+    case func_interval:
+    case func_menu_bell_ding_mode:
+    case func_menu_bell_ding_mode_intv:
+      blink_position_X = 0;
+      blink_position_Y = line2;
+      blink_string1 = "      ";
+      break;
+    case func_menu_set_round10:
+      blink_position_X = dig4;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_round1:
+      blink_position_X = dig5;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_round_time_mode:
+      blink_position_X = dig1; // 26
+      blink_position_Y = line1;
+      blink_string1 = "  ";
+      break;
+    case func_menu_set_round_time_min10:
+    case func_menu_set_round_recall_normal_min10:
+    case func_menu_set_round_recall_interval_min10:
+      blink_position_X = dig1;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_round_time_min1:
+    case func_menu_set_round_recall_normal_min1:
+    case func_menu_set_round_recall_interval_min1:
+      blink_position_X = dig2;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_round_time_sec10:
+    case func_menu_set_round_recall_normal_sec10:
+    case func_menu_set_round_recall_interval_sec10:
+      blink_position_X = dig4;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_round_time_sec1:
+    case func_menu_set_round_recall_normal_sec1:
+    case func_menu_set_round_recall_interval_sec1:
+      blink_position_X = dig5;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_hour1:
+      blink_position_X = dig2;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_hour10:
+      blink_position_X = dig1;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_min1:
+      blink_position_X = dig5;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_min10:
+      blink_position_X = dig4;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_day1:
+      blink_position_X = dig2;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_day10:
+      blink_position_X = dig1;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_month1:
+      blink_position_X = dig5;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_month10:
+      blink_position_X = dig4;
+      blink_position_Y = line1;
+      break;
+    case func_menu_set_time_date_bright:
+      blink_position_X = dig3;
+      blink_position_Y = line1;
+      blink_string1 = "   ";
+      break;
+    case func_menu_set_year1:
+      blink_position_X = dig4 + 2;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_year10:
+      blink_position_X = dig3 + 2;
+      blink_position_Y = line2;
+      break;
+    case func_menu_set_volume_beep:
+    case func_menu_set_volume_voice:
+      blink_position_X = dig4;
+      blink_position_Y = line2;
+      blink_string1 = "   ";
+      break;
+    default:
+      // statements
+      break;
   }
 }
 
@@ -243,14 +306,14 @@ void blink_show(void) {
                | (state == func_menu_set_round_recall_normal_min1)
                | (state == func_menu_set_round_recall_normal_sec10)
                | (state == func_menu_set_round_recall_normal_sec1)) {
-      dmd.drawString(2, line1, "Round");
+      dmd.drawString(dig1, line1, "Round");
 
       show_recal_round_normal();
     } else if ((state == func_menu_set_round_recall_interval_min10)
                | (state == func_menu_set_round_recall_interval_min1)
                | (state == func_menu_set_round_recall_interval_sec10)
                | (state == func_menu_set_round_recall_interval_sec1)) {
-      dmd.drawString(2, line1, "Inter");
+      dmd.drawString(dig1, line1, "Inter");
       show_recal_round_interval();
     } else if ((state == func_menu_set_round10)
                | (state == func_menu_set_round1)
@@ -278,127 +341,69 @@ void blink_show(void) {
 }
 
 void show_bell_state(void) {
-  dmd.drawString(2, line1, "Nt Rd"); // Notifications for Round
+  dmd.drawString(dig1, line1, "Nt Rd"); // Notifications for Round
 
   switch (bell_ding_mode_val) {
     case audio_off:
-      dmd.drawString(2, line2, "Off  ");
+      dmd.drawString(dig1, line2, "Off  ");
       break;
     case audio_beep:
-      dmd.drawString(2, line2, "Beep ");
+      dmd.drawString(dig1, line2, "Beep ");
       break;
     case audio_voice:
-      dmd.drawString(2, line2, "Voice");
+      dmd.drawString(dig1, line2, "Voice");
       break;
     case audio_beep_voice:
-      dmd.drawString(2, line2, "B+V  ");
+      dmd.drawString(dig1, line2, "B+V  ");
       break;
     case audio_music:
-      dmd.drawString(2, line2, "Music");
+      dmd.drawString(dig1, line2, "Music");
       break;
     case audio_beep_music:
-      dmd.drawString(2, line2, "B+M  ");
+      dmd.drawString(dig1, line2, "B+M  ");
       break;
     case audio_music_voice:
-      dmd.drawString(2, line2, "M+V  ");
+      dmd.drawString(dig1, line2, "M+V  ");
       break;
     case audio_beep_music_voice:
-      dmd.drawString(2, line2, "B+M+V");
+      dmd.drawString(dig1, line2, "B+M+V");
     default:
-      // comando(s)
+      //
       break;
-
-      //  switch (bell_ding_mode_val) {
-      //    case 0:
-      //      dmd.drawString(2, line2, "Beep ");
-      //      break;
-      //    case 1:
-      //      dmd.drawString(2, line2, "Music");
-      //      break;
-      //    case 2:
-      //      dmd.drawString(2, line2, "Voice");
-      //      break;
-      //    case 3:
-      //      dmd.drawString(2, line2, "B+M  ");
-      //      break;
-      //    case 4:
-      //      dmd.drawString(2, line2, "B+V  ");
-      //      break;
-      //    case 5:
-      //      dmd.drawString(2, line2, "M+V  ");
-      //      break;
-      //    case 6:
-      //      dmd.drawString(2, line2, "B+M+V");
-      //      break;
-      //    case 7:
-      //      dmd.drawString(2, line2, "Off  ");
-      //      break;
-      //    default:
-      //      // comando(s)
-      //      break;
   }
 }
 
 void show_bell_state_intv(void) {
-  dmd.drawString(2, line1, "Nt In"); // Notifications for Interval
-  
+  dmd.drawString(dig1, line1, "Nt In"); // Notifications for Interval
+
   switch (bell_ding_mode_val_intv) {
     case audio_off:
-      dmd.drawString(2, line2, "Off  ");
+      dmd.drawString(dig1, line2, "Off  ");
       break;
     case audio_beep:
-      dmd.drawString(2, line2, "Beep ");
+      dmd.drawString(dig1, line2, "Beep ");
       break;
     case audio_voice:
-      dmd.drawString(2, line2, "Voice");
+      dmd.drawString(dig1, line2, "Voice");
       break;
     case audio_beep_voice:
-      dmd.drawString(2, line2, "B+V  ");
+      dmd.drawString(dig1, line2, "B+V  ");
       break;
     case audio_music:
-      dmd.drawString(2, line2, "Music");
+      dmd.drawString(dig1, line2, "Music");
       break;
     case audio_beep_music:
-      dmd.drawString(2, line2, "B+M  ");
+      dmd.drawString(dig1, line2, "B+M  ");
       break;
     case audio_music_voice:
-      dmd.drawString(2, line2, "M+V  ");
+      dmd.drawString(dig1, line2, "M+V  ");
       break;
     case audio_beep_music_voice:
-      dmd.drawString(2, line2, "B+M+V");
+      dmd.drawString(dig1, line2, "B+M+V");
       break;
     default:
-      // comando(s)
+      //
       break;
-
-      //  switch (bell_ding_mode_val_intv) {
-      //    case 0:
-      //      dmd.drawString(2, line2, "Beep ");
-      //      break;
-      //    case 1:
-      //      dmd.drawString(2, line2, "Music");
-      //      break;
-      //    case 2:
-      //      dmd.drawString(2, line2, "Voice");
-      //      break;
-      //    case 3:
-      //      dmd.drawString(2, line2, "B+M  ");
-      //      break;
-      //    case 4:
-      //      dmd.drawString(2, line2, "B+V  ");
-      //      break;
-      //    case 5:
-      //      dmd.drawString(2, line2, "M+V  ");
-      //      break;
-      //    case 6:
-      //      dmd.drawString(2, line2, "B+M+V");
-      //      break;
-      //    case 7:
-      //      dmd.drawString(2, line2, "Off  ");
-      //      break;
-      //    default:
-      //      // comando(s)
-      //      break;
   }
 }
 
@@ -410,8 +415,14 @@ void show_date_time(void) {
       clock_show_cnt = 0;
 
       state = func_date;
-      dmd.drawString(0, line1, "      ");
-      dmd.drawString(0, line2, "      ");
+
+      dmd.clearScreen();
+
+      show_rtc_temp();
+      delayWdt(2500);
+
+      dmd.clearScreen();
+
       show_date();
     }
   } else if (state == func_date) {
@@ -430,8 +441,7 @@ void show_date_time(void) {
         state = func_clock;
       }
 
-      dmd.drawString(0, line1, "      ");
-      dmd.drawString(0, line2, "      ");
+      dmd.clearScreen();
       show_clock_and_temperature();
     }
   }
@@ -440,7 +450,17 @@ void show_date_time(void) {
 void show_clock_and_temperature(void) {
   dmd.clearScreen();
   show_clock();
-  show_temperature();
+
+  show_temperature(temperature);
+
+  if (temperature > 45.0) {
+    for (int i = 0; i < 5; i++) {
+      dmd.drawString(0, line2, "      ");
+      delayWdt(200);
+      show_temperature(temperature);
+      delayWdt(200);
+    }
+  }
 }
 
 void show_date(void) {
@@ -483,9 +503,9 @@ void show_date(void) {
     year1 = "----";
   }
 
-  dmd.drawString(2, line1, day1 + "/");
-  dmd.drawString(19, line1, month1);
-  dmd.drawString(4, line2, year1);
+  dmd.drawString(dig1, line1, day1 + "/");
+  dmd.drawString(dig4, line1, month1);
+  dmd.drawString(dig1 + 2, line2, year1);
 }
 
 void show_date2(void) {
@@ -528,14 +548,14 @@ void show_date2(void) {
     year1 = "----";
   }
 
-  dmd.drawString(2, line1, day1 + "/");
-  dmd.drawString(19, line1, month1);
-  dmd.drawString(4, line2, year1);
+  dmd.drawString(dig1, line1, day1 + "/");
+  dmd.drawString(dig4, line1, month1);
+  dmd.drawString(dig1 + 2, line2, year1);
 }
 
 void show_clock(void) {
-  String hour1;
-  String min1;
+  String hour1 = "";
+  String min1 = "";
 
   get_rtc();
 
@@ -569,9 +589,9 @@ void show_clock(void) {
     min1 = "--";
   }
 
-  dmd.drawString(2, line1, hour1);
-  dmd.drawString(14, line1, ":");
-  dmd.drawString(19, line1, min1);
+  dmd.drawString(dig1, line1, hour1);
+  dmd.drawString(dig3, line1, "h");
+  dmd.drawString(dig4, line1, min1);
 }
 
 void show_clock2(void) {
@@ -607,65 +627,72 @@ void show_clock2(void) {
     min1 = "--";
   }
 
-  dmd.drawString(2, line2, hour1);
-  dmd.drawString(14, line2, ":");
-  dmd.drawString(19, line2, min1);
-  dmd.drawString(2, line1, "b:" + String(show_sel_time_date_bright * 5));
+  dmd.drawString(dig1, line2, hour1);
+  dmd.drawString(dig3, line2, "h");
+  dmd.drawString(dig4, line2, min1);
+
+  dmd.drawString(dig1, line1, "b:" + String(show_sel_time_date_bright * 5));
 }
 
-void show_temperature(void) {
-  String temp_string;
-  String temp_dec_string;
+void show_rtc_temp(void) {
+  dmd.drawString(dig1, line1, "T.int");
+  show_temperature(rtc_temp);
+
+  if (rtc_temp > 45.0) {
+    for (int i = 0; i < 5; i++) {
+      dmd.drawString(0, line2, "      ");
+      delayWdt(200);
+      show_temperature(rtc_temp);
+      delayWdt(200);
+    }
+  }
+}
+
+void show_temperature(int temper) {
+  String temp_string = "";
   bool neg_sig = false;
 
-  //temperature = 111.9;
-
-  if (temperature < 0) {
-    temperature *= -1;
+  if (temper < 0) {
+    temper *= -1;
 
     neg_sig = true;
   }
 
-  temp_dec_string = String(int((temperature * 10) - int(temperature) * 10));
-
-  if ((neg_sig == true) && (temperature == 127)) { // DEVICE_DISCONNECTED_C -127
-    temp_string = "--";
-    temp_dec_string = "-";
-  } else {
-    temp_string = String(int(temperature));
-
-    if ((temperature < 10) && (neg_sig == false)) {
-      temp_string = ' ' + temp_string;
-    }
-
-    //    if (temperature < 10) {
-    //      x_add = -3;
-    //    }
-  }
+  temp_string = String(temper);
 
   if (neg_sig == false) {
-    dmd.drawString(2, 9, temp_string);
-    if (temperature < 100) {
-      dmd.drawString(14, 9, ".");
-      dmd.drawString(19, 9, temp_dec_string);
+    if (temper < 100) {
+      if (temper < 10) {
+        dmd.drawString(dig2, line2, temp_string);
+        draw_degree(dig3, line2);
+      } else {
+        dmd.drawString(dig1 + 3, line2, temp_string);
+        draw_degree(dig3 + 3, line2);
+      }
+    } else {
+      dmd.drawString(dig1, line2, temp_string);
+      draw_degree(dig4, line2);
     }
   } else {
-    if (temperature == 127) {  // DEVICE_DISCONNECTED_C -127
-      dmd.drawString(2, 9, temp_string);
-      dmd.drawString(14, 9, ".");
-      dmd.drawString(19, 9, temp_dec_string);
-    } else {
-      dmd.drawString(2, 9, "-");
-      dmd.drawString(8, 9, temp_string);
-      if (temperature < 10) {
-        dmd.drawString(14, 9, ".");
-        dmd.drawString(19, 9, temp_dec_string);
+    if (temper < 100) { // LM35 neg. max.: -55°C
+      if (temper < 10) {
+        dmd.drawString(dig1 + 3, line2, "-");
+        dmd.drawString(dig2 + 3, line2, temp_string);
+        draw_degree(dig3 + 3, line2);
+      } else {
+        dmd.drawString(dig1, line2, "-");
+        dmd.drawString(dig2, line2, temp_string);
+        draw_degree(dig4, line2);
       }
     }
   }
+}
 
-  dmd.drawLine(25, 10, 25, 11); //°
-  dmd.drawLine(26, 9, 27, 9);
-  dmd.drawLine(28, 10, 28, 11);
-  dmd.drawLine(26, 12, 27, 12);
+void draw_degree(int dig, int line) {
+  dmd.drawLine(0 + dig, 1 + line, 0 + dig, 2 + line); //°
+  dmd.drawLine(1 + dig, 0 + line, 2 + dig, 0 + line);
+  dmd.drawLine(3 + dig, 1 + line, 3 + dig, 2 + line);
+  dmd.drawLine(1 + dig, 3 + line, 2 + dig, 3 + line);
+
+  dmd.drawString(dig + 6, line2, "C");
 }

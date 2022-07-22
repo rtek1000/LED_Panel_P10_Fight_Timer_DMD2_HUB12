@@ -28,7 +28,7 @@ enum {
   beep_volume_addr,
   music_volume_addr,
   voice_volume_addr
-} eeprom_address_ref;
+};
 //------ EEPROM address - end
 
 void update_recall(void) {
@@ -84,4 +84,40 @@ void get_data_from_eeprom(void) {
 
   if (voice_volume > 30) voice_volume = 1;
   if (voice_volume < 1) voice_volume = 1;
+
+  if (show_sel_time_date_bright < 1)
+  {
+    show_sel_time_date_bright = 1;
+  }
+
+  if (round_recall_min10 > 9) {
+    round_recall_min10 = 0;
+  }
+  if (round_recall_min1 > 9) {
+    round_recall_min1 = 0;
+  }
+  if (round_recall_sec10 > 5) {
+    round_recall_sec10 = 0;
+  }
+  if (round_recall_sec1 > 9) {
+    round_recall_sec1 = 0;
+  }
+
+  if (interval_recall_min10 > 9) {
+    interval_recall_min10 = 0;
+  }
+  if (interval_recall_min1 > 9) {
+    interval_recall_min1 = 0;
+  }
+  if (interval_recall_sec10 > 5) {
+    interval_recall_sec10 = 0;
+  }
+  if (interval_recall_sec1 > 9) {
+    interval_recall_sec1 = 0;
+  }
+
+  L10 = round_recall_min10;
+  L1 = round_recall_min1;
+  R10 = round_recall_sec10;
+  R1 = round_recall_sec1;
 }
