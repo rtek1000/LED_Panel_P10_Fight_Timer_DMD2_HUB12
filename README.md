@@ -35,7 +35,7 @@ Note: Work in progress, sorry.
 - Kebidu USB Wired Mini Speaker Computer Speakers Bass Stereo
 - TP4056 Charging Module with Battery Protection
 - Mt3608 2A Max Dc-Dc Step Up Power Module Booster 
-- P10 Panel 32x16 (Red led)
+- P10 Panel 32x16 (Red LED)
 - Power bank Pineng PN-951 (Good current capacity (up to 2 Amps), low standby consumption, charge indicator via LED, slim body, 10000mA 3.7V battery, CI IP5306)
 -  ̶E̶S̶P̶8̶2̶6̶6̶ ̶(̶F̶i̶r̶m̶w̶a̶r̶e̶ ̶e̶s̶p̶-̶l̶i̶n̶k̶ ̶v̶3̶.̶2̶.̶4̶7̶-̶g̶9̶c̶6̶5̶3̶0̶d̶)̶ RF remote control only (Low memory)
 -  ̶E̶N̶C̶2̶8̶J̶6̶0̶ ̶(̶N̶o̶t̶ ̶i̶m̶p̶l̶e̶m̶e̶n̶t̶e̶d̶ ̶y̶e̶t̶)̶ (Low memory)
