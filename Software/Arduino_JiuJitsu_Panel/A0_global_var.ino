@@ -27,9 +27,9 @@
 
 //------ I/O - start
 // RF remote control 433MHz
-#define input_ctrl_left_pin A3 // A3 // btn 1 - A3 (Left)
-#define input_ctrl_cent_pin A2 // 2 // btn 2 - 2  (Center)
-#define input_ctrl_right_pin A1 // 3 // btn 3 - 3  (Right)
+#define input_ctrl_left_pin A2  // A3 // btn 1 - A3 (Menu)
+#define input_ctrl_cent_pin A1  // A2 // btn 2 - 2  (Sel/Next)
+#define input_ctrl_right_pin A3 // A1 // btn 3 - 3  (Exit/Time)
 
 // Temperature sensor
 #define LM35 A6 // To LM35/
