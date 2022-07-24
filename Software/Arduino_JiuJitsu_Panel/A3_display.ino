@@ -76,6 +76,12 @@ void decrement_time_and_show(void) {
       draw_degree(dig4, line2);
 
       delayWdt(2000);
+
+      dmd.drawString(dig1, line1, "Batt.");
+      dmd.drawString(dig1, line2, ">Risk");
+      draw_degree(dig4, line2);
+
+      delayWdt(2000);    
     }
   }
 
