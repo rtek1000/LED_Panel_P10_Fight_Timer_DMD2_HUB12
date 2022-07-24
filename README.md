@@ -21,8 +21,8 @@ Note: Work in progress, sorry.
 - - Initially done using remote to learn code (RF 433MHz), but when researching about security, it doesn't seem like a good choice.
 - - Researched about the rolling code RF remote control, but it is complicated and the mid-range model with HCSxx is already being considered unsafe.
     (Search for MCS3142 if you want something safer than the HCS family)
-- - The code was adapted to receive commands via the serial port, to be controlled via TCP connection using ESP-Link (ESP8266) transparently.
-- - Remote control would be performed via Android smartphone App.
+- -  ̶T̶h̶e̶ ̶c̶o̶d̶e̶ ̶w̶a̶s̶ ̶a̶d̶a̶p̶t̶e̶d̶ ̶t̶o̶ ̶r̶e̶c̶e̶i̶v̶e̶ ̶c̶o̶m̶m̶a̶n̶d̶s̶ ̶v̶i̶a̶ ̶t̶h̶e̶ ̶s̶e̶r̶i̶a̶l̶ ̶p̶o̶r̶t̶,̶ ̶t̶o̶ ̶b̶e̶ ̶c̶o̶n̶t̶r̶o̶l̶l̶e̶d̶ ̶v̶i̶a̶ ̶T̶C̶P̶ ̶c̶o̶n̶n̶e̶c̶t̶i̶o̶n̶ ̶u̶s̶i̶n̶g̶ ̶E̶S̶P̶-̶L̶i̶n̶k̶ ̶(̶E̶S̶P̶8̶2̶6̶6̶)̶ ̶t̶r̶a̶n̶s̶p̶a̶r̶e̶n̶t̶l̶y̶.̶
+- -  ̶R̶e̶m̶o̶t̶e̶ ̶c̶o̶n̶t̶r̶o̶l̶ ̶w̶o̶u̶l̶d̶ ̶b̶e̶ ̶p̶e̶r̶f̶o̶r̶m̶e̶d̶ ̶v̶i̶a̶ ̶A̶n̶d̶r̶o̶i̶d̶ ̶s̶m̶a̶r̶t̶p̶h̶o̶n̶e̶ ̶A̶p̶p̶.̶
 
 ## Software:
 - Code written in Arduino IDE
