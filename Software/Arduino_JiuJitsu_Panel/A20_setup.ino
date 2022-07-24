@@ -1,5 +1,5 @@
 void setup(void) {
-  delayWdt(300);
+  delayWdt(500);
 
   wdt_enable(WDTO_4S);
 

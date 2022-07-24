@@ -36,8 +36,11 @@
 
 // Corrective factor:
 // 28.3°C (Arduino) / 24.7°C (0.247V using Multimeter) = 1.145748988
+// 126°C (Using hot air from JCD 8898) / 100.0°C (Arduino) = 1.26
+
 // 0.48828125 / 1.145748988 = 0.426167734
-#define Corrective_Factor 0.426167734
+// 0.48828125 / 1.26 = 0.387524802
+#define Corrective_Factor 0.387524802 // 0.426167734
 
 // Bell defines (for warnings)
 // MP3 files located on DFPlayer Mini's SD card
