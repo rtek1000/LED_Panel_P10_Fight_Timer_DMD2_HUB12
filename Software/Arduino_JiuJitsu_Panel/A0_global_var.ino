@@ -34,6 +34,12 @@
 // Temperature sensor
 #define LM35 A6 // To LM35/
 
+// RTC SQW
+#define SQW_interruptPin 2
+
+// Panel ON/OFF
+#define PanelOnOffPin 10
+
 // Corrective factor:
 // 28.3°C (Arduino) / 24.7°C (0.247V using Multimeter) = 1.145748988
 // 126°C (Using hot air from JCD 8898) / 100.0°C (Arduino) = 1.26
@@ -72,9 +78,6 @@
 #define voice_round_time 1500 // 1500ms
 #define voice_interval_time 1500 // 1500ms
 
-// RTC SQW
-#define SQW_interruptPin 2
-
 byte state_sqw = LOW;
 byte state_sqw_old = LOW;
 
@@ -105,6 +108,8 @@ byte state_sqw_old = LOW;
 //#define  P10-OE     9
 //#define  P10-DATA  11
 //#define  P10-CLK   13
+
+//#define  P10-ON   10
 //------ I/O - end
 
 //------ Display P10 line position - start
@@ -125,6 +130,7 @@ enum {
   func_interval,
   func_clock,
   func_date,
+  func_menu_power_off,
   func_menu_set_round_recall_normal_min10,
   func_menu_set_round_recall_normal_min1,
   func_menu_set_round_recall_normal_sec10,
@@ -198,6 +204,9 @@ boolean input_ctrl_right_old = false;
 boolean input_ctrl_left_pin_old = true;
 boolean input_ctrl_cent_pin_old = true;
 boolean input_ctrl_right_pin_old = true;
+
+bool power_off_enabled = false;
+unsigned long power_off_timeout_blink = 0;
 
 int bell_ding_mode_val = 0;
 int bell_ding_mode_val_intv = 0;

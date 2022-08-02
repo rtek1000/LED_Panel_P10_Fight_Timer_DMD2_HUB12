@@ -59,6 +59,30 @@ void controller(void) {
     input_ctrl_right = true;
   }
 
+  if (power_off_enabled == true) {
+    // power_off_enabled = false;
+
+    if ((input_ctrl_left == true) || (input_ctrl_cent == true) || (input_ctrl_right == true)) {
+      dmd.clearScreen();
+      dmd.drawString(dig1, line1, "Pwr");
+      dmd.drawString(dig1, line2, "On");
+      for (byte i = 0; i < 2; i++) {
+        dmd.drawString(dig3 + (i * 6), line2, ".");
+        delayWdt(1500);
+      }
+
+      delayWdt(1500);
+
+      // dmd.clearScreen();
+
+      while (1); // reset by WDT to force restart
+    }
+
+    input_ctrl_left = false;
+    input_ctrl_cent = false;
+    input_ctrl_right = false;
+  }
+
   if ((input_ctrl_left == true) & (input_ctrl_left_old == false)) {
     //    while ((digitalRead(input_ctrl_left_pin) == HIGH)
     //           & (input_ctrl_left_serial)) {}
@@ -94,97 +118,202 @@ void controller(void) {
   input_ctrl_right = false;
 }
 
-void ctrl_left_cmd(void) {
+void ctrl_right_cmd(void) {
   dmd.clearScreen();
-  delayWdt(50);
+  //  delayWdt(50);
 
   switch (state) {
-    case func_menu_reset_round:
-
-    case func_menu_set_round:
-    case func_menu_set_round10:
-    case func_menu_set_round1:
-
-    case func_menu_set_round_time_mode:
-    case func_menu_set_round_time_min10:
-    case func_menu_set_round_time_min1:
-    case func_menu_set_round_time_sec10:
-    case func_menu_set_round_time_sec1:
-
-    case func_menu_set_round_recall_normal:
-    case func_menu_set_round_recall_normal_min10:
-    case func_menu_set_round_recall_normal_min1:
-    case func_menu_set_round_recall_normal_sec10:
-    case func_menu_set_round_recall_normal_sec1:
-
-    case func_menu_set_round_recall_interval:
-    case func_menu_set_round_recall_interval_min10:
-    case func_menu_set_round_recall_interval_min1:
-    case func_menu_set_round_recall_interval_sec10:
-    case func_menu_set_round_recall_interval_sec1:
-
-    case func_menu_bell_ding_mode:
-    case func_menu_bell_ding_mode_intv:
-
-    case func_menu_set_volume_beep:
-    //    case func_menu_set_volume_music:
-    case func_menu_set_volume_voice:
-      show_menu_timeout = 0;
-      blink_state = false;
-      pause_state = pause_state_previous;
-      state = time_sel;
-      delayWdt(100);
-      show_round_and_time();
-      update_recall();
-      break;
-
-    case func_clock:
-    case func_date:
-      state = time_sel;
-      if (time_sel == func_interval) {
-        blink_state = true;
-      } else {
-        blink_state = false;
-      }
-      show_round_and_time();
-      break;
     case func_normal:
     case func_interval:
-      time_sel = state;
+      pause_state_previous = pause_state;
+      pause_state = true;
+      state = func_menu_power_off;
       blink_state = false;
-      state = func_clock;
-      show_clock_and_temperature();
+      dmd.drawString(2, line1, "Pwr");
+      dmd.drawString(2, line2, "OFF?");
       break;
-
-    case func_menu_set_hour1:
-    case func_menu_set_hour10:
-    case func_menu_set_min1:
-    case func_menu_set_min10:
+    case func_menu_power_off:
+      state = func_menu_reset_round;
+      dmd.drawString(2, line1, "Reset");
+      dmd.drawString(2, line2, "Cnt?");
+      break;
+    case func_menu_reset_round:
+      state = func_menu_set_round;
+      dmd.drawString(2, line1, "Set");
+      dmd.drawString(2, line2, "Cnt?");
+      break;
+    case func_menu_set_round:
+      state = func_menu_set_round_recall_normal;
+      dmd.drawString(2, line1, "Set");
+      dmd.drawString(2, line2, "Rd?");
+      break;
+    case func_menu_set_round_recall_normal:
+      state = func_menu_set_round_recall_interval;
+      dmd.drawString(2, line1, "Set");
+      dmd.drawString(2, line2, "Intv?");
+      break;
+    case func_menu_set_round_recall_interval:
+      blink_state = true;
+      state = func_menu_bell_ding_mode;
+      break;
+    case func_menu_bell_ding_mode:
+      blink_state = true;
+      state = func_menu_bell_ding_mode_intv;
+      break;
+    case func_menu_bell_ding_mode_intv:
+      blink_state = false;
+      state = func_menu_set_volume_beep;
+      dmd.drawString(2, line1, "Volum");
+      dmd.drawString(2, line2, "B: " + String(beep_volume));
+      break;
+    case func_menu_set_volume_beep:
+      blink_state = false;
+      // state = func_menu_set_volume_music;
+      state = func_menu_set_volume_voice;
+      dmd.drawString(2, line1, "Volum");
+      //      dmd.drawString(2, line2, "M: " + String(music_volume));
+      dmd.drawString(2, line2, "V: " + String(voice_volume));
+      break;
+    //    case func_menu_set_volume_music:
+    //      blink_state = false;
+    //      state = func_menu_set_volume_voice;
+    //      dmd.drawString(2, line1, "Volum");
+    //      dmd.drawString(2, line2, "V: " + String(voice_volume));
+    //      break;
+    case func_menu_set_volume_voice:
+      state = func_menu_reset_round; // retorna
+      blink_state = false;
+      ctrl_left_cmd(); // exit
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
+    case func_menu_set_round_time_mode:
+      state = func_menu_set_round10;
+      break;
+    case func_menu_set_round10:
+      state = func_menu_set_round1;
+      break;
+    case func_menu_set_round1:
+      state = func_menu_set_round_time_min10;
+      break;
+    case func_menu_set_round_time_min10:
+      state = func_menu_set_round_time_min1;
+      break;
+    case func_menu_set_round_time_min1:
+      state = func_menu_set_round_time_sec10;
+      break;
+    case func_menu_set_round_time_sec10:
+      state = func_menu_set_round_time_sec1;
+      break;
+    case func_menu_set_round_time_sec1:
+      state = func_menu_set_round_time_mode;
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    // switch (state) {
+    case func_menu_set_round_recall_normal_min10:
+      state = func_menu_set_round_recall_normal_min1;
+      break;
+    case func_menu_set_round_recall_normal_min1:
+      state = func_menu_set_round_recall_normal_sec10;
+      break;
+    case func_menu_set_round_recall_normal_sec10:
+      state = func_menu_set_round_recall_normal_sec1;
+      break;
+    case func_menu_set_round_recall_normal_sec1:
+      state = func_menu_set_round_recall_normal_min10;
+      break;
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
+    case func_menu_set_round_recall_interval_min10:
+      state = func_menu_set_round_recall_interval_min1;
+      break;
+    case func_menu_set_round_recall_interval_min1:
+      state = func_menu_set_round_recall_interval_sec10;
+      break;
+    case func_menu_set_round_recall_interval_sec10:
+      state = func_menu_set_round_recall_interval_sec1;
+      break;
+    case func_menu_set_round_recall_interval_sec1:
+      state = func_menu_set_round_recall_interval_min10;
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
+    case func_clock:
+      state = func_menu_set_time_date_bright;
+      blink_state = true;
+      break;
+    case func_date:
+      state = func_menu_set_day10;
+      blink_state = true;
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_time_date_bright:
-      show_menu_timeout = 0;
-      clock_show_cnt = 0;
-      state = func_clock;
-
-      blink_state = false;
-      show_clock_and_temperature();
+      state = func_menu_set_hour10;
       break;
-
-    case func_menu_set_day1:
+    case func_menu_set_hour10:
+      state = func_menu_set_hour1;
+      break;
+    case func_menu_set_hour1:
+      state = func_menu_set_min10;
+      break;
+    case func_menu_set_min10:
+      state = func_menu_set_min1;
+      break;
+    case func_menu_set_min1:
+      state = func_menu_set_time_date_bright;
+      break;
+    //    default:
+    //      //
+    //      break;
+    //  }
+    //
+    //  switch (state) {
     case func_menu_set_day10:
-    case func_menu_set_month1:
+      state = func_menu_set_day1;
+      break;
+    case func_menu_set_day1:
+      state = func_menu_set_month10;
+      break;
     case func_menu_set_month10:
-    case func_menu_set_year1:
+      state = func_menu_set_month1;
+      break;
+    case func_menu_set_month1:
+      state = func_menu_set_year10;
+      break;
     case func_menu_set_year10:
-      show_menu_timeout = 0;
-      date_show_cnt = 0;
-      state = func_date;
-
-      blink_state = false;
-      show_date();
+      state = func_menu_set_year1;
+      break;
+    case func_menu_set_year1:
+      state = func_menu_set_day10;
       break;
     default:
+      //
       break;
   }
+
+  blink_alternate = true;
 
   show_menu_timeout = set_menu_timeout;
 }
@@ -206,6 +335,23 @@ void ctrl_cent_cmd(void) {
   //delayWdt(50);
 
   switch (state) {
+    case func_menu_power_off:
+      power_off_enabled = true;
+
+      dmd.drawString(2, line1, "P.Off");
+      dmd.drawString(2, line2, "Ok");
+
+      delayWdt(2000);
+
+      dmd.clearScreen();
+
+      state = func_normal;
+      time_sel = func_normal;
+
+      pause_state = true;
+      blink_state = false;
+      show_round_and_time();
+      break;
     case func_menu_reset_round:
       round_cnt10 = 0;
       round_cnt1 = 1;
@@ -680,197 +826,98 @@ void ctrl_cent_cmd(void) {
   show_menu_timeout = set_menu_timeout;
 }
 
-void ctrl_right_cmd(void) {
+void ctrl_left_cmd(void) {
   dmd.clearScreen();
-  //  delayWdt(50);
+  delayWdt(50);
 
   switch (state) {
+    case func_menu_power_off:
+    case func_menu_reset_round:
+
+    case func_menu_set_round:
+    case func_menu_set_round10:
+    case func_menu_set_round1:
+
+    case func_menu_set_round_time_mode:
+    case func_menu_set_round_time_min10:
+    case func_menu_set_round_time_min1:
+    case func_menu_set_round_time_sec10:
+    case func_menu_set_round_time_sec1:
+
+    case func_menu_set_round_recall_normal:
+    case func_menu_set_round_recall_normal_min10:
+    case func_menu_set_round_recall_normal_min1:
+    case func_menu_set_round_recall_normal_sec10:
+    case func_menu_set_round_recall_normal_sec1:
+
+    case func_menu_set_round_recall_interval:
+    case func_menu_set_round_recall_interval_min10:
+    case func_menu_set_round_recall_interval_min1:
+    case func_menu_set_round_recall_interval_sec10:
+    case func_menu_set_round_recall_interval_sec1:
+
+    case func_menu_bell_ding_mode:
+    case func_menu_bell_ding_mode_intv:
+
+    case func_menu_set_volume_beep:
+    //    case func_menu_set_volume_music:
+    case func_menu_set_volume_voice:
+      show_menu_timeout = 0;
+      blink_state = false;
+      pause_state = pause_state_previous;
+      state = time_sel;
+      delayWdt(100);
+      show_round_and_time();
+      update_recall();
+      break;
+
+    case func_clock:
+    case func_date:
+      state = time_sel;
+      if (time_sel == func_interval) {
+        blink_state = true;
+      } else {
+        blink_state = false;
+      }
+      show_round_and_time();
+      break;
     case func_normal:
     case func_interval:
-      pause_state_previous = pause_state;
-      pause_state = true;
-      state = func_menu_reset_round;
+      time_sel = state;
       blink_state = false;
-      dmd.drawString(2, line1, "Reset");
-      dmd.drawString(2, line2, "Cnt?");
+      state = func_clock;
+      show_clock_and_temperature();
       break;
-    case func_menu_reset_round:
-      state = func_menu_set_round;
-      dmd.drawString(2, line1, "Set");
-      dmd.drawString(2, line2, "Cnt?");
-      break;
-    case func_menu_set_round:
-      state = func_menu_set_round_recall_normal;
-      dmd.drawString(2, line1, "Set");
-      dmd.drawString(2, line2, "Rd?");
-      break;
-    case func_menu_set_round_recall_normal:
-      state = func_menu_set_round_recall_interval;
-      dmd.drawString(2, line1, "Set");
-      dmd.drawString(2, line2, "Intv?");
-      break;
-    case func_menu_set_round_recall_interval:
-      blink_state = true;
-      state = func_menu_bell_ding_mode;
-      break;
-    case func_menu_bell_ding_mode:
-      blink_state = true;
-      state = func_menu_bell_ding_mode_intv;
-      break;
-    case func_menu_bell_ding_mode_intv:
-      blink_state = false;
-      state = func_menu_set_volume_beep;
-      dmd.drawString(2, line1, "Volum");
-      dmd.drawString(2, line2, "B: " + String(beep_volume));
-      break;
-    case func_menu_set_volume_beep:
-      blink_state = false;
-      // state = func_menu_set_volume_music;
-      state = func_menu_set_volume_voice;
-      dmd.drawString(2, line1, "Volum");
-      //      dmd.drawString(2, line2, "M: " + String(music_volume));
-      dmd.drawString(2, line2, "V: " + String(voice_volume));
-      break;
-    //    case func_menu_set_volume_music:
-    //      blink_state = false;
-    //      state = func_menu_set_volume_voice;
-    //      dmd.drawString(2, line1, "Volum");
-    //      dmd.drawString(2, line2, "V: " + String(voice_volume));
-    //      break;
-    case func_menu_set_volume_voice:
-      state = func_menu_reset_round; // retorna
-      blink_state = false;
-      ctrl_left_cmd(); // exit
-      break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    //  switch (state) {
-    case func_menu_set_round_time_mode:
-      state = func_menu_set_round10;
-      break;
-    case func_menu_set_round10:
-      state = func_menu_set_round1;
-      break;
-    case func_menu_set_round1:
-      state = func_menu_set_round_time_min10;
-      break;
-    case func_menu_set_round_time_min10:
-      state = func_menu_set_round_time_min1;
-      break;
-    case func_menu_set_round_time_min1:
-      state = func_menu_set_round_time_sec10;
-      break;
-    case func_menu_set_round_time_sec10:
-      state = func_menu_set_round_time_sec1;
-      break;
-    case func_menu_set_round_time_sec1:
-      state = func_menu_set_round_time_mode;
-      break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    // switch (state) {
-    case func_menu_set_round_recall_normal_min10:
-      state = func_menu_set_round_recall_normal_min1;
-      break;
-    case func_menu_set_round_recall_normal_min1:
-      state = func_menu_set_round_recall_normal_sec10;
-      break;
-    case func_menu_set_round_recall_normal_sec10:
-      state = func_menu_set_round_recall_normal_sec1;
-      break;
-    case func_menu_set_round_recall_normal_sec1:
-      state = func_menu_set_round_recall_normal_min10;
-      break;
-      break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    //  switch (state) {
-    case func_menu_set_round_recall_interval_min10:
-      state = func_menu_set_round_recall_interval_min1;
-      break;
-    case func_menu_set_round_recall_interval_min1:
-      state = func_menu_set_round_recall_interval_sec10;
-      break;
-    case func_menu_set_round_recall_interval_sec10:
-      state = func_menu_set_round_recall_interval_sec1;
-      break;
-    case func_menu_set_round_recall_interval_sec1:
-      state = func_menu_set_round_recall_interval_min10;
-      break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    //  switch (state) {
-    case func_clock:
-      state = func_menu_set_time_date_bright;
-      blink_state = true;
-      break;
-    case func_date:
-      state = func_menu_set_day10;
-      blink_state = true;
-      break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    //  switch (state) {
-    case func_menu_set_time_date_bright:
-      state = func_menu_set_hour10;
-      break;
-    case func_menu_set_hour10:
-      state = func_menu_set_hour1;
-      break;
+
     case func_menu_set_hour1:
-      state = func_menu_set_min10;
-      break;
-    case func_menu_set_min10:
-      state = func_menu_set_min1;
-      break;
+    case func_menu_set_hour10:
     case func_menu_set_min1:
-      state = func_menu_set_time_date_bright;
+    case func_menu_set_min10:
+    case func_menu_set_time_date_bright:
+      show_menu_timeout = 0;
+      clock_show_cnt = 0;
+      state = func_clock;
+
+      blink_state = false;
+      show_clock_and_temperature();
       break;
-    //    default:
-    //      //
-    //      break;
-    //  }
-    //
-    //  switch (state) {
-    case func_menu_set_day10:
-      state = func_menu_set_day1;
-      break;
+
     case func_menu_set_day1:
-      state = func_menu_set_month10;
-      break;
-    case func_menu_set_month10:
-      state = func_menu_set_month1;
-      break;
+    case func_menu_set_day10:
     case func_menu_set_month1:
-      state = func_menu_set_year10;
-      break;
-    case func_menu_set_year10:
-      state = func_menu_set_year1;
-      break;
+    case func_menu_set_month10:
     case func_menu_set_year1:
-      state = func_menu_set_day10;
+    case func_menu_set_year10:
+      show_menu_timeout = 0;
+      date_show_cnt = 0;
+      state = func_date;
+
+      blink_state = false;
+      show_date();
       break;
     default:
-      //
       break;
   }
-
-  blink_alternate = true;
 
   show_menu_timeout = set_menu_timeout;
 }

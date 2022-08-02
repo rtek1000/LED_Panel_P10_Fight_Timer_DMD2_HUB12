@@ -57,7 +57,7 @@ void show_recal_round_interval(void) {
 
 void decrement_time_and_show(void) {
   if (rtc_temp > 45) { // rtc_temp, temperature
-    if (millis() > (millis_high_temp + 30000)) { // 30000
+    if ((millis() - millis_high_temp) >= 30000) { // 30000
       millis_high_temp = millis();
 
       for (int i = 0; i < 3; i++) {

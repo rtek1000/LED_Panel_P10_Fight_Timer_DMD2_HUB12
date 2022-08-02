@@ -1,4 +1,7 @@
 void setup(void) {
+  pinMode(PanelOnOffPin, OUTPUT);
+  digitalWrite(PanelOnOffPin, HIGH);
+  
   delayWdt(500);
 
   wdt_enable(WDTO_4S);
@@ -62,8 +65,10 @@ void setup(void) {
   //  pinMode(dfPlayerStatus, OUTPUT);
   //  digitalWrite(dfPlayerStatus, LOW);
 
+  digitalWrite(PanelOnOffPin, LOW); // Panel ON
+
   delayWdt(100);
-  
+
   //seed_rand();
 
   dmd.begin();
