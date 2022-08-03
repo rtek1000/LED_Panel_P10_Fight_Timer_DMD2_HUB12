@@ -5,21 +5,21 @@ void loop (void) {
     controller();
     //delayWdt(0);
 
-    if (power_off_enabled == true) {
-      dmd.setBrightness(3);
-      
-      dmd.clearScreen();
-
-      if ((millis() - power_off_timeout_blink) >= 10000) {
-        power_off_timeout_blink = millis();
-
-        dmd.setPixel(0, 0);
-
-        delayWdt(100);
-
-        dmd.clearScreen();
-      }
-    }
+    //    if (power_off_enabled == true) {
+    //      dmd.setBrightness(3);
+    //
+    //      dmd.clearScreen();
+    //
+    //      if ((millis() - power_off_timeout_blink) >= 10000) {
+    //        power_off_timeout_blink = millis();
+    //
+    //        dmd.setPixel(0, 0);
+    //
+    //        delayWdt(100);
+    //
+    //        dmd.clearScreen();
+    //      }
+    //    }
   }
 
   if (power_off_enabled == false) {

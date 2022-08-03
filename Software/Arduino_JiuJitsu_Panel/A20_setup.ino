@@ -109,17 +109,31 @@ void setup(void) {
   }
 
 #ifndef skip_init_msg
+  dmd.drawString(2, line1, "Hello");
+  dmd.drawString(2, line2, "buddy");
+
+  delayWdt(2000);
+
+  dmd.drawString(2, line1, "let's");
+  dmd.drawString(2, line2, "fight");
+
+  delayWdt(2000);
+
+  dmd.clearScreen();
+
+  delayWdt(500);
+  
   dmd.drawString(2, line1, "Fight");
   dmd.drawString(2, line2, "Timer");
 
-  delayWdt(3000);
+  delayWdt(2000);
 
   dmd.clearScreen();
 
   dmd.drawString(2, line1, "DMD2");
   dmd.drawString(2, line2, "HUB12");
 
-  delayWdt(3000);
+  delayWdt(2000);
 
   // text_scroll(F("Fight_Timer_DMD_HUB12"));
 
@@ -202,6 +216,8 @@ void setup(void) {
   }
 
   show_round_and_time();
+
+  dmd.drawString(dig3, line1, ".");
 
   bell_start();
 

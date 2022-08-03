@@ -63,17 +63,19 @@ void controller(void) {
     // power_off_enabled = false;
 
     if ((input_ctrl_left == true) || (input_ctrl_cent == true) || (input_ctrl_right == true)) {
-      dmd.clearScreen();
-      dmd.drawString(dig1, line1, "Pwr");
-      dmd.drawString(dig1, line2, "On");
-      for (byte i = 0; i < 2; i++) {
-        dmd.drawString(dig3 + (i * 6), line2, ".");
-        delayWdt(1500);
-      }
-
-      delayWdt(1500);
+      //      dmd.clearScreen();
+      //      dmd.drawString(dig1, line1, "Pwr");
+      //      dmd.drawString(dig1, line2, "On");
+      //      for (byte i = 0; i < 2; i++) {
+      //        dmd.drawString(dig3 + (i * 6), line2, ".");
+      //        delayWdt(1500);
+      //      }
+      //
+      //      delayWdt(1500);
 
       // dmd.clearScreen();
+
+      wdt_enable(WDTO_15MS); // USE VERY CAREFULLY!!! 15ms reset
 
       while (1); // reset by WDT to force restart
     }
@@ -350,19 +352,41 @@ void ctrl_cent_cmd(void) {
     case func_menu_power_off:
       power_off_enabled = true;
 
-      dmd.drawString(2, line1, "P.Off");
-      dmd.drawString(2, line2, "Ok");
+      dmd.drawString(2, line1, "P Off");
+      dmd.drawString(2, line2, "C You");
 
       delayWdt(2000);
 
       dmd.clearScreen();
 
-      state = func_normal;
-      time_sel = func_normal;
+      delayWdt(20);
 
+      dmd.stop();
+
+      digitalWrite(PanelOnOffPin, HIGH); // Panel Off
+
+      SPI.end();
+
+      digitalWrite(P10_A, LOW);
+      digitalWrite(P10_B, LOW);
+      digitalWrite(P10_SCK, LOW);
+      digitalWrite(P10_OE, LOW);
+      digitalWrite(P10_DATA, LOW);
+      digitalWrite(P10_CLK, LOW);
+
+      pinMode(P10_A, INPUT);
+      pinMode(P10_B, INPUT);
+      pinMode(P10_SCK, INPUT);
+      pinMode(P10_OE, INPUT);
+      pinMode(P10_DATA, INPUT);
+      pinMode(P10_CLK, INPUT);
+
+      //      state = func_normal;
+      //      time_sel = func_normal;
+      //
       pause_state = true;
-      blink_state = false;
-      show_round_and_time();
+      //      blink_state = false;
+      // show_round_and_time();
       break;
     case func_menu_reset_round:
       round_cnt10 = 0;

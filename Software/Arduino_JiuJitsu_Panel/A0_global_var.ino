@@ -105,12 +105,12 @@ byte state_sqw_old = LOW;
   }
 */
 
-//#define  P10-A      6
-//#define  P10-B      7
-//#define  P10-SCK    8
-//#define  P10-OE     9
-//#define  P10-DATA  11
-//#define  P10-CLK   13
+#define  P10_A      6
+#define  P10_B      7
+#define  P10_SCK    8
+#define  P10_OE     9
+#define  P10_DATA  11
+#define  P10_CLK   13
 
 //#define  P10-ON   10
 //------ I/O - end
