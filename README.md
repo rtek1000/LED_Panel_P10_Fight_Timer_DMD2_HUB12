@@ -44,7 +44,7 @@ Note: Work in progress, sorry.
 - -  ̶s̶u̶d̶o̶ ̶a̶p̶t̶-̶g̶e̶t̶ ̶i̶n̶s̶t̶a̶l̶l̶ ̶r̶e̶p̶l̶a̶y̶g̶a̶i̶n̶
 - - -  ̶r̶e̶p̶l̶a̶y̶g̶a̶i̶n̶ ̶-̶r̶ ̶-̶1̶ ̶*̶.̶m̶p̶3̶
 - -  ̶h̶t̶t̶p̶s̶:̶/̶/̶e̶n̶.̶w̶i̶k̶i̶p̶e̶d̶i̶a̶.̶o̶r̶g̶/̶w̶i̶k̶i̶/̶R̶e̶p̶l̶a̶y̶G̶a̶i̶n̶
-- - ---> ![Audacity](https://www.audacityteam.org/) software performs better <---
+- - ---> [Audacity](https://www.youtube.com/watch?v=RC5sHYV95Lo) software performs better <---
 
 ## Licence:
 
