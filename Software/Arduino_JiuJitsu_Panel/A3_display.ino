@@ -81,7 +81,7 @@ void decrement_time_and_show(void) {
       dmd.drawString(dig1, line2, ">Risk");
       draw_degree(dig4, line2);
 
-      delayWdt(2000);    
+      delayWdt(2000);
     }
   }
 
@@ -147,7 +147,8 @@ void decrement_time_and_show(void) {
     millis_temp = millis();
     delayWdt(50);
     show_round_and_time();
-    delayWdt(500);
+    dmd.drawString(dig3, line1, ".");
+    // delayWdt(500);
 
     bell_stop();
 
@@ -182,7 +183,8 @@ void decrement_time_and_show(void) {
     }
 
     show_round_and_time();
-    delayWdt(500);
+    dmd.drawString(dig3, line1, ".");
+    // delayWdt(500);
 
     bell_start();
   }

@@ -1,8 +1,21 @@
 void setup(void) {
   pinMode(PanelOnOffPin, OUTPUT);
   digitalWrite(PanelOnOffPin, HIGH);
-  
+
+  pinMode(PlayerOnOffPin, OUTPUT);
+  digitalWrite(PanelOnOffPin, HIGH);
+
   delayWdt(500);
+
+  pinMode(0, OUTPUT);
+  digitalWrite(0, LOW);
+
+  pinMode(1, OUTPUT);
+  digitalWrite(1, LOW);
+
+  delayWdt(500);
+
+  digitalWrite(PanelOnOffPin, LOW);
 
   wdt_enable(WDTO_4S);
 

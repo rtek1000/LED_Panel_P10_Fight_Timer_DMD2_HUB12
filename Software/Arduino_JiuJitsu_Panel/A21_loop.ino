@@ -3,6 +3,7 @@ void loop (void) {
     millisControl = millis();
 
     controller();
+    //delayWdt(0);
 
     if (power_off_enabled == true) {
       dmd.setBrightness(3);

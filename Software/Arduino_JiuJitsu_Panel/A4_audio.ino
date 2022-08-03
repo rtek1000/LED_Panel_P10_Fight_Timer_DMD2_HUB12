@@ -24,7 +24,7 @@ void bell_stop(void) {
       // delayWdt(100);
 
       // dfPlayFolder(2, 2); // beep
-      DFPlayer1.playFolder(beep_folder, beep_stop_num);
+      DFPlayer1.playFolder(beep_folder, beep_type_stop); // beep_stop_num
       // DFPlayer1.playMp3Folder(11);
 
       // delayWdt(100);
@@ -44,7 +44,7 @@ void bell_stop(void) {
 
       for (int i = 0; i < 2; i++) {
         // dfPlayFolder(2, 2); // beep
-        DFPlayer1.playFolder(beep_folder, beep_stop_num);
+        DFPlayer1.playFolder(beep_folder, beep_type_stop); // beep_stop_num
         // DFPlayer1.playMp3Folder(11);
 
         delayWdt(beep_stop_time);
@@ -108,7 +108,7 @@ void bell_start(void) {
       // delayWdt(100);
 
       // dfPlayFolder(2, 1); // beep
-      DFPlayer1.playFolder(beep_folder, beep_start_num);
+      DFPlayer1.playFolder(beep_folder, beep_type_start); // beep_start_num
       //DFPlayer1.playMp3Folder(12);
 
       // delayWdt(100);
@@ -137,10 +137,10 @@ void bell_start(void) {
         //      voice_volume = EEPROM.read(voice_volume_addr);
 
         // dfPlayFolder(2, 1); // beep
-        DFPlayer1.playFolder(beep_folder, beep_start_num);
+        DFPlayer1.playFolder(beep_folder, beep_type_start); // beep_start_num
         // DFPlayer1.playMp3Folder(12);
 
-        delayWdt(beep_stop_time);
+        delayWdt(beep_start_time);
 
         // waitDfPlayer(1);
       }

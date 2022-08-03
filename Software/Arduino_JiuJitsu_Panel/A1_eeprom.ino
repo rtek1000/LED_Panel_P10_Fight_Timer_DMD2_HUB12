@@ -27,7 +27,9 @@ enum {
 
   beep_volume_addr,
   music_volume_addr,
-  voice_volume_addr
+  voice_volume_addr,
+  beep_type_start_addr,
+  beep_type_stop_addr
 };
 //------ EEPROM address - end
 
@@ -50,6 +52,9 @@ void update_recall(void) {
   EEPROM.update(beep_volume_addr, beep_volume); //
   EEPROM.update(music_volume_addr, music_volume); //
   EEPROM.update(voice_volume_addr, voice_volume); //
+
+  EEPROM.update(beep_type_start_addr, beep_type_start); //
+  EEPROM.update(beep_type_stop_addr, beep_type_stop); //
 }
 
 void get_data_from_eeprom(void) {
@@ -84,6 +89,16 @@ void get_data_from_eeprom(void) {
 
   if (voice_volume > 30) voice_volume = 1;
   if (voice_volume < 1) voice_volume = 1;
+
+  beep_type_start = EEPROM.read(beep_type_start_addr);
+
+  if (beep_type_start > 40) beep_type_start = 1;
+  if (beep_type_start < 1) beep_type_start = 1;
+
+  beep_type_stop = EEPROM.read(beep_type_stop_addr);
+
+  if (beep_type_stop > 40) beep_type_stop = 1;
+  if (beep_type_stop < 1) beep_type_stop = 1;
 
   if (show_sel_time_date_bright < 1)
   {

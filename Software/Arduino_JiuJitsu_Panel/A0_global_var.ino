@@ -40,6 +40,9 @@
 // Panel ON/OFF
 #define PanelOnOffPin 10
 
+// DFPlayer Mini On/Off
+#define PlayerOnOffPin 4
+
 // Corrective factor:
 // 28.3°C (Arduino) / 24.7°C (0.247V using Multimeter) = 1.145748988
 // 126°C (Using hot air from JCD 8898) / 100.0°C (Arduino) = 1.26
@@ -54,8 +57,8 @@
 // The sound must be on the SD card warning the start of the interval (2.mp3)
 #define beep_folder 1 // folder 01
 
-#define beep_start_num 1 // file 001.mp3
-#define beep_stop_num 2 // file 002.mp3
+//#define beep_start_num 1 // file 001.mp3
+//#define beep_stop_num 2 // file 002.mp3
 
 #define beep_start_time 1500 // 1500ms
 #define beep_stop_time 1500 // 1500ms
@@ -165,7 +168,9 @@ enum {
   func_menu_bell_ding_mode_intv,
   func_menu_set_volume_beep,
   // func_menu_set_volume_music,
-  func_menu_set_volume_voice
+  func_menu_set_volume_voice,
+  func_menu_set_beep_type_start,
+  func_menu_set_beep_type_stop
 };
 
 enum {
@@ -293,6 +298,9 @@ String inputString = "";
 int beep_volume = 20;
 int music_volume = 20;
 int voice_volume = 30;
+
+int beep_type_start = 1;
+int beep_type_stop = 1;
 
 bool send_data_start = false;
 

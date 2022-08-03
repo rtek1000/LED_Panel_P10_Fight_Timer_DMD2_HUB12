@@ -162,6 +162,18 @@ void ctrl_right_cmd(void) {
       break;
     case func_menu_bell_ding_mode_intv:
       blink_state = false;
+      state = func_menu_set_beep_type_start;
+      dmd.drawString(2, line1, "Start");
+      dmd.drawString(2, line2, "B: " + String(beep_type_start));
+      break;
+    case func_menu_set_beep_type_start:
+      blink_state = false;
+      state = func_menu_set_beep_type_stop;
+      dmd.drawString(2, line1, "Stop");
+      dmd.drawString(2, line2, "B: " + String(beep_type_stop));
+      break;
+    case func_menu_set_beep_type_stop:
+      blink_state = false;
       state = func_menu_set_volume_beep;
       dmd.drawString(2, line1, "Volum");
       dmd.drawString(2, line2, "B: " + String(beep_volume));
@@ -633,10 +645,10 @@ void ctrl_cent_cmd(void) {
       update_rtc();
       break;
     case func_menu_set_time_date_bright:
-      if (show_sel_time_date_bright < 20)
-        show_sel_time_date_bright++;
+      if (show_sel_time_date_bright > 1)
+        show_sel_time_date_bright--;
       else
-        show_sel_time_date_bright = 1;
+        show_sel_time_date_bright = 20;
       if ((show_sel_time_date_bright * 5) > 254)
         dmd.setBrightness(254);
       else
@@ -792,11 +804,45 @@ void ctrl_cent_cmd(void) {
     //  }
     //
     //  switch (state) {
-    case func_menu_set_volume_beep:
-      if (beep_volume < 30)
-        beep_volume++;
+    case func_menu_set_beep_type_start:
+      if (beep_type_start > 1)
+        beep_type_start--;
       else
-        beep_volume = 1;
+        beep_type_start = 40;
+      dmd.drawString(2, line1, "Start");
+      dmd.drawString(2, line2, "B. " + String(beep_type_start));
+
+      DFPlayer1.stop();
+      DFPlayer1.playFolder(beep_folder, beep_type_start); // beep_start_num
+      delayWdt(beep_start_time);
+
+      dmd.drawString(dig2, line2, ":");
+
+      //bell_start();
+      //bell_stop();
+      break;
+    case func_menu_set_beep_type_stop:
+      if (beep_type_stop > 1)
+        beep_type_stop--;
+      else
+        beep_type_stop = 40;
+      dmd.drawString(2, line1, "Stop");
+      dmd.drawString(2, line2, "B. " + String(beep_type_stop));
+
+      DFPlayer1.stop();
+      DFPlayer1.playFolder(beep_folder, beep_type_stop); // beep_stop_num
+      delayWdt(beep_stop_time);
+
+      dmd.drawString(dig2, line2, ":");
+
+      //bell_start();
+      //bell_stop();
+      break;
+    case func_menu_set_volume_beep:
+      if (beep_volume > 1)
+        beep_volume--;
+      else
+        beep_volume = 30;
       dmd.drawString(2, line1, "Volum");
       dmd.drawString(2, line2, "B: " + String(beep_volume));
       break;
@@ -809,10 +855,10 @@ void ctrl_cent_cmd(void) {
     //      dmd.drawString(2, line2, "M: " + String(music_volume));
     //      break;
     case func_menu_set_volume_voice:
-      if (voice_volume < 30)
-        voice_volume++;
+      if (voice_volume > 1)
+        voice_volume--;
       else
-        voice_volume = 1;
+        voice_volume = 30;
       dmd.drawString(2, line1, "Volum");
       dmd.drawString(2, line2, "V: " + String(voice_volume));
       break;
@@ -860,6 +906,8 @@ void ctrl_left_cmd(void) {
     case func_menu_bell_ding_mode_intv:
 
     case func_menu_set_volume_beep:
+    case func_menu_set_beep_type_start:
+    case func_menu_set_beep_type_stop:
     //    case func_menu_set_volume_music:
     case func_menu_set_volume_voice:
       show_menu_timeout = 0;
